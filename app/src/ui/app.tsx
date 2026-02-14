@@ -59,6 +59,7 @@ import {
     RevertProgress,
 } from './toolbar'
 import { syncClockwise } from './octicons'
+import * as octicons from './octicons/octicons.generated'
 import {
     showCertificateTrustDialog,
     sendReady,
@@ -2995,6 +2996,33 @@ export class App extends React.Component<IAppProps, IAppState> {
     }
   }
 
+  private renderOpenFolderButton() {
+    const selection = this.state.selectedState
+    if (!selection || selection.type !== SelectionType.Repository) {
+      return null
+    }
+
+    return (
+      <ToolbarButton
+        title="Open folder"
+        description={selection.repository.path}
+        icon={octicons.fileDirectoryFill}
+        onClick={this.onOpenFolder}
+        className="open-folder-button"
+        style={ToolbarButtonStyle.Subtitle}
+      />
+    )
+  }
+
+  private onOpenFolder = () => {
+    const selection = this.state.selectedState
+    if (!selection || selection.type !== SelectionType.Repository) {
+      return
+    }
+
+    shell.showFolderContents(selection.repository.path)
+  }
+
   private renderFetchButton() {
     const selection = this.state.selectedState
     if (!selection || selection.type !== SelectionType.Repository) {
@@ -3097,20 +3125,10 @@ export class App extends React.Component<IAppProps, IAppState> {
       }
     }
 
-    const currentFoldout = this.state.currentFoldout
-
-    const isDropdownOpen =
-      currentFoldout !== null && currentFoldout.type === FoldoutType.PushPull
-
     const forcePushBranchState = getCurrentBranchForcePushState(
       branchesState,
       aheadBehind
     )
-
-    /** The dropdown focus trap will stop focus event propagation we made need
-     * in some of our dialogs (noticed with Lists). Disabled this when dialogs
-     * are open */
-    const enableFocusTrap = this.state.currentPopup === null
 
     return (
       <PushPullButton
@@ -3129,10 +3147,6 @@ export class App extends React.Component<IAppProps, IAppState> {
         shouldNudge={
           this.state.currentOnboardingTutorialStep === TutorialStep.PushBranch
         }
-        isDropdownOpen={isDropdownOpen}
-        askForConfirmationOnForcePush={this.state.askForConfirmationOnForcePush}
-        onDropdownStateChanged={this.onPushPullDropdownStateChanged}
-        enableFocusTrap={enableFocusTrap}
         pushPullButtonWidth={this.state.pushPullButtonWidth}
       />
     )
@@ -3195,14 +3209,6 @@ export class App extends React.Component<IAppProps, IAppState> {
     branch: Branch
   ) => {
     this.props.dispatcher.openCreatePullRequestInBrowser(repository, branch)
-  }
-
-  private onPushPullDropdownStateChanged = (newState: DropdownState) => {
-    if (newState === 'open') {
-      this.props.dispatcher.showFoldout({ type: FoldoutType.PushPull })
-    } else {
-      this.props.dispatcher.closeFoldout(FoldoutType.PushPull)
-    }
   }
 
   private onBranchDropdownStateChanged = (newState: DropdownState) => {
@@ -3325,6 +3331,7 @@ export class App extends React.Component<IAppProps, IAppState> {
     return (
       <Toolbar id="desktop-app-toolbar">
         {this.renderBranchToolbarButton()}
+        {this.renderOpenFolderButton()}
         {this.renderPushPullToolbarButton()}
         {this.renderFetchButton()}
       </Toolbar>

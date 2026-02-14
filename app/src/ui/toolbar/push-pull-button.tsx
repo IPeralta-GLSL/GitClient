@@ -19,15 +19,8 @@ import { RelativeTime } from '../relative-time'
 
 import { ToolbarButton, ToolbarButtonStyle } from './button'
 import classNames from 'classnames'
-import {
-    DropdownState,
-    IToolbarDropdownProps,
-    ToolbarDropdown,
-    ToolbarDropdownStyle,
-} from './dropdown'
-import { FoldoutType, IConstrainedValue } from '../../lib/app-state'
+import { IConstrainedValue } from '../../lib/app-state'
 import { ForcePushBranchState } from '../../lib/rebase'
-import { PushPullButtonDropDown } from './push-pull-button-dropdown'
 import { AriaLiveContainer } from '../accessibility/aria-live-container'
 import { enableResizingToolbarButtons } from '../../lib/feature-flag'
 
@@ -82,31 +75,8 @@ interface IPushPullButtonProps {
    */
   readonly numTagsToPush: number
 
-  /** Whether or not the push-pull dropdown is currently open */
-  readonly isDropdownOpen: boolean
-
-  /** Will the app prompt the user to confirm a force push? */
-  readonly askForConfirmationOnForcePush: boolean
-
-  /** Whether the dropdown will trap focus or not. Defaults to true.
-   *
-   * Example of usage: If a dropdown is open and then a dialog subsequently, the
-   * focus trap logic will stop propagation of the focus event to the dialog.
-   * Thus, we want to disable this when dialogs are open since they will be
-   * using the dialog focus management.
-   */
-  readonly enableFocusTrap: boolean
-
   /** The width of the resizable push/pull button, as derived from AppState. */
   readonly pushPullButtonWidth: IConstrainedValue
-
-  /**
-   * An event handler for when the drop down is opened, or closed, by a pointer
-   * event or by pressing the space or enter key while focused.
-   *
-   * @param state    - The new state of the drop down
-   */
-  readonly onDropdownStateChanged: (state: DropdownState) => void
 }
 
 type ActionInProgress = 'push' | 'pull' | 'fetch' | 'force push'
@@ -250,114 +220,20 @@ export class PushPullButton extends React.Component<
     }
   }
 
-  /** The common props for all dropdown states */
-  private defaultDropdownProps(): Omit<
-    IToolbarDropdownProps,
-    'dropdownContentRenderer'
-  > {
-    return {
-      buttonClassName: 'push-pull-button',
-      style: ToolbarButtonStyle.Subtitle,
-      dropdownStyle: ToolbarDropdownStyle.MultiOption,
-      ariaLabel: 'Push, pull, fetch options',
-      dropdownState: this.props.isDropdownOpen ? 'open' : 'closed',
-      enableFocusTrap: this.props.enableFocusTrap,
-      onDropdownStateChanged: this.props.onDropdownStateChanged,
-    }
-  }
-
-  private closeDropdown() {
-    this.props.dispatcher.closeFoldout(FoldoutType.PushPull)
-  }
-
   private push = () => {
-    this.closeDropdown()
     this.props.dispatcher.push(this.props.repository)
   }
 
-  /**
-   * The dropdown focus trap has logic to set the document.ActiveElement to the
-   * html element (in this case the dropdown button) that was clicked to
-   * activate the focus trap. It also has a returnFocusOnDeactivate prop that is
-   * true by default, but can be set to false to prevent this behavior.
-   *
-   * In the case of force push that opens a confirm dialog, we want to set the
-   * focus to the aria live container and therefore we set
-   * returnFocusOnDeactivate to false. We also provided the onDeactivate
-   * callback of the focus trap to set that focus. See more details in
-   * setScreenReaderStateMessageFocus()
-   *
-   * @returns true - (default behavior) if not force push, or if force and confirmation is off
-   * @returns false -if force push and confirmation is on, so we can manage focus ourselves
-   * */
-  private returnFocusOnDeactivate = () => {
-    const isForcePushOptionAvailable =
-      this.props.forcePushBranchState !== ForcePushBranchState.NotAvailable
-
-    return (
-      !isForcePushOptionAvailable || !this.props.askForConfirmationOnForcePush
-    )
-  }
-
-  /**
-   * In the case of force push that opens a confirm dialog, we want to set the
-   * focus to the aria live container and we do so on the onDeactivate callback
-   * of the focus trap to set that focus. Additionally, we set
-   * returnFocusOnDeactivate to false to prevent the dropdowns focus traps
-   * default focus management.  See more details in
-   * setScreenReaderStateMessageFocus()*/
-  private onDropdownFocusTrapDeactivate = () => {
-    if (this.returnFocusOnDeactivate()) {
-      return
-    }
-
-    this.setScreenReaderStateMessageFocus()
-  }
-
-  /**
-   * This is a hack to get the screen reader to read the message after the force
-   * push confirm dialog closes.
-   *
-   * Problem: The dialog component sets the focus back to what ever was in the
-   * `document.ActiveElement` when the dialog was opened. However the active
-   * element is the force push button that is replaced with the fetch button.
-   * Thus, the force push element is no longer present when the dialog closes
-   * and the focus defaults to the document body. This means the sr message is
-   * not read.
-   *
-   * Solution: Set the `document.ActiveElement` to an element containing the sr
-   * element before opening the dialog so that it returns the focus to an
-   * element containing the sr. You can do this by calling the `focus` element
-   * of a tab focusable element hence adding the tab index.
-   *
-   * Other notes: If I set the focus to the sr element directly, it causes the
-   * message to be read twice.
-   */
-  private setScreenReaderStateMessageFocus() {
-    const srElement = document.getElementById('push-pull-button-state')
-    if (srElement) {
-      srElement.tabIndex = -1
-      srElement.focus()
-    }
-  }
-
   private forcePushWithLease = () => {
-    this.closeDropdown()
-
-    this.setScreenReaderStateMessageFocus()
     this.props.dispatcher.confirmOrForcePush(this.props.repository)
-
     this.setState({ actionInProgress: 'force push' })
   }
 
   private pull = () => {
-    this.closeDropdown()
     this.props.dispatcher.pull(this.props.repository)
   }
 
   private fetch = () => {
-    this.closeDropdown()
-
     this.props.dispatcher.fetch(
       this.props.repository,
       FetchType.UserInitiatedTask
@@ -380,24 +256,6 @@ export class PushPullButton extends React.Component<
    */
   private onReset = () => {
     this.props.dispatcher.resetPushPullButtonWidth()
-  }
-
-  private getDropdownContentRenderer(
-    itemTypes: ReadonlyArray<DropdownItemType>
-  ) {
-    return () => {
-      return (
-        <PushPullButtonDropDown
-          itemTypes={itemTypes}
-          remoteName={this.props.remoteName}
-          fetch={this.fetch}
-          forcePushWithLease={this.forcePushWithLease}
-          askForConfirmationOnForcePush={
-            this.props.askForConfirmationOnForcePush
-          }
-        />
-      )
-    }
   }
 
   public render() {
@@ -584,7 +442,7 @@ export class PushPullButton extends React.Component<
       : 'Publish this branch to the remote'
 
     const className = classNames(
-      this.defaultDropdownProps().className,
+      this.defaultButtonProps().className,
       'nudge-arrow',
       {
         'nudge-arrow-up': shouldNudge,
@@ -592,14 +450,13 @@ export class PushPullButton extends React.Component<
     )
 
     return (
-      <ToolbarDropdown
-        {...this.defaultDropdownProps()}
+      <ToolbarButton
+        {...this.defaultButtonProps()}
         title="Publish branch"
         description={description}
         icon={octicons.upload}
         onClick={onClick}
         className={className}
-        dropdownContentRenderer={this.getDropdownContentRenderer([])}
       />
     )
   }
@@ -617,27 +474,16 @@ export class PushPullButton extends React.Component<
       ? `Pull ${remoteName} with rebase`
       : `Pull ${remoteName}`
 
-    const dropdownItemTypes: DropdownItemType[] = []
-
-    if (forcePushBranchState !== ForcePushBranchState.NotAvailable) {
-      dropdownItemTypes.push(DropdownItemType.ForcePush)
-    }
-
     return (
-      <ToolbarDropdown
-        {...this.defaultDropdownProps()}
+      <ToolbarButton
+        {...this.defaultButtonProps()}
         title={title}
         description={renderLastFetched(lastFetched)}
         icon={octicons.arrowDown}
         onClick={onClick}
-        dropdownContentRenderer={this.getDropdownContentRenderer(
-          dropdownItemTypes
-        )}
-        returnFocusOnDeactivate={this.returnFocusOnDeactivate()}
-        onDropdownFocusTrapDeactivate={this.onDropdownFocusTrapDeactivate}
       >
         {renderAheadBehind(aheadBehind, numTagsToPush)}
-      </ToolbarDropdown>
+      </ToolbarButton>
     )
   }
 
@@ -649,16 +495,15 @@ export class PushPullButton extends React.Component<
     onClick: () => void
   ) {
     return (
-      <ToolbarDropdown
-        {...this.defaultDropdownProps()}
+      <ToolbarButton
+        {...this.defaultButtonProps()}
         title={`Push ${remoteName}`}
         description={renderLastFetched(lastFetched)}
         icon={octicons.arrowUp}
         onClick={onClick}
-        dropdownContentRenderer={this.getDropdownContentRenderer([])}
       >
         {renderAheadBehind(aheadBehind, numTagsToPush)}
-      </ToolbarDropdown>
+      </ToolbarButton>
     )
   }
 
@@ -670,16 +515,15 @@ export class PushPullButton extends React.Component<
     onClick: () => void
   ) {
     return (
-      <ToolbarDropdown
-        {...this.defaultDropdownProps()}
+      <ToolbarButton
+        {...this.defaultButtonProps()}
         title={`Force push ${remoteName}`}
         description={renderLastFetched(lastFetched)}
         icon={forcePushIcon}
         onClick={onClick}
-        dropdownContentRenderer={this.getDropdownContentRenderer([])}
       >
         {renderAheadBehind(aheadBehind, numTagsToPush)}
-      </ToolbarDropdown>
+      </ToolbarButton>
     )
   }
 }
