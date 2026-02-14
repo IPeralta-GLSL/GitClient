@@ -1,0 +1,105 @@
+.repository-tab-bar {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  background-color: var(--box-background-color);
+  border-bottom: 1px solid var(--box-border-color);
+  height: 34px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  flex-shrink: 0;
+
+  &::-webkit-scrollbar {
+    height: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--scroll-bar-thumb-background-color);
+    border-radius: 2px;
+  }
+
+  .repo-tab {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    padding: 0 8px;
+    min-width: 120px;
+    max-width: 200px;
+    cursor: pointer;
+    border-right: 1px solid var(--box-border-color);
+    color: var(--text-secondary-color);
+    font-size: var(--font-size);
+    position: relative;
+    user-select: none;
+    transition: background-color 0.15s ease, color 0.15s ease;
+
+    &:hover {
+      background-color: var(--box-hover-background-color);
+      color: var(--text-color);
+
+      .tab-close {
+        opacity: 1;
+      }
+    }
+
+    &.active {
+      background-color: var(--background-color);
+      color: var(--text-color);
+
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background-color: var(--focus-color);
+      }
+
+      .tab-close {
+        opacity: 0.7;
+      }
+    }
+
+    .tab-icon {
+      flex-shrink: 0;
+      width: 14px;
+      height: 14px;
+    }
+
+    .tab-label {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .tab-close {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      border: none;
+      background: none;
+      color: inherit;
+      cursor: pointer;
+      border-radius: var(--border-radius);
+      padding: 0;
+      opacity: 0;
+      transition: opacity 0.15s ease, background-color 0.15s ease;
+
+      &:hover {
+        background-color: var(--box-border-contrast-color);
+        opacity: 1;
+      }
+
+      .octicon {
+        width: 12px;
+        height: 12px;
+      }
+    }
+  }
+}

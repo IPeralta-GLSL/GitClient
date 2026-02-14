@@ -1,51 +1,51 @@
 import { Disposable, DisposableLike } from 'event-kit'
 
 import {
-  IAPIOrganization,
-  IAPIPullRequest,
-  IAPIFullRepository,
-  IAPICheckSuite,
-  IAPIRepoRuleset,
-  getDotComAPIEndpoint,
-  IAPICreatePushProtectionBypassResponse,
+    IAPIOrganization,
+    IAPIPullRequest,
+    IAPIFullRepository,
+    IAPICheckSuite,
+    IAPIRepoRuleset,
+    getDotComAPIEndpoint,
+    IAPICreatePushProtectionBypassResponse,
 } from '../../lib/api'
 import { shell } from '../../lib/app-shell'
 import {
-  CompareAction,
-  Foldout,
-  FoldoutType,
-  ICompareFormUpdate,
-  RepositorySectionTab,
-  RebaseConflictState,
-  isRebaseConflictState,
-  isCherryPickConflictState,
-  CherryPickConflictState,
-  MultiCommitOperationConflictState,
-  IMultiCommitOperationState,
-  CommitOptions,
+    CompareAction,
+    Foldout,
+    FoldoutType,
+    ICompareFormUpdate,
+    RepositorySectionTab,
+    RebaseConflictState,
+    isRebaseConflictState,
+    isCherryPickConflictState,
+    CherryPickConflictState,
+    MultiCommitOperationConflictState,
+    IMultiCommitOperationState,
+    CommitOptions,
 } from '../../lib/app-state'
 import { assertNever, fatalError } from '../../lib/fatal-error'
 import {
-  setGenericPassword,
-  setGenericUsername,
+    setGenericPassword,
+    setGenericUsername,
 } from '../../lib/generic-git-auth'
 import {
-  RebaseResult,
-  PushOptions,
-  getCommitsBetweenCommits,
-  getBranches,
-  getRebaseSnapshot,
-  getRepositoryType,
+    RebaseResult,
+    PushOptions,
+    getCommitsBetweenCommits,
+    getBranches,
+    getRebaseSnapshot,
+    getRepositoryType,
 } from '../../lib/git'
 import { isGitOnPath } from '../../lib/is-git-on-path'
 import {
-  IOpenRepositoryFromURLAction,
-  IUnknownAction,
-  URLActionType,
+    IOpenRepositoryFromURLAction,
+    IUnknownAction,
+    URLActionType,
 } from '../../lib/parse-app-url'
 import {
-  matchExistingRepository,
-  urlsMatch,
+    matchExistingRepository,
+    urlsMatch,
 } from '../../lib/repository-matching'
 import { Shell } from '../../lib/shells'
 import { ILaunchStats, StatsStore } from '../../lib/stats'
@@ -68,22 +68,22 @@ import { GitHubRepository } from '../../models/github-repository'
 import { ManualConflictResolution } from '../../models/manual-conflict-resolution'
 import { Popup, PopupType } from '../../models/popup'
 import {
-  PullRequest,
-  PullRequestSuggestedNextAction,
+    PullRequest,
+    PullRequestSuggestedNextAction,
 } from '../../models/pull-request'
 import {
-  Repository,
-  RepositoryWithGitHubRepository,
-  isRepositoryWithGitHubRepository,
-  getGitHubHtmlUrl,
-  isRepositoryWithForkedGitHubRepository,
-  getNonForkGitHubRepository,
+    Repository,
+    RepositoryWithGitHubRepository,
+    isRepositoryWithGitHubRepository,
+    getGitHubHtmlUrl,
+    isRepositoryWithForkedGitHubRepository,
+    getNonForkGitHubRepository,
 } from '../../models/repository'
 import { RetryAction, RetryActionType } from '../../models/retry-actions'
 import {
-  CommittedFileChange,
-  WorkingDirectoryFileChange,
-  WorkingDirectoryStatus,
+    CommittedFileChange,
+    WorkingDirectoryFileChange,
+    WorkingDirectoryStatus,
 } from '../../models/status'
 import { TipState, IValidBranch } from '../../models/tip'
 import { Banner, BannerType } from '../../models/banner'
@@ -91,14 +91,14 @@ import { Banner, BannerType } from '../../models/banner'
 import { ApplicationTheme } from '../lib/application-theme'
 import { installCLI } from '../lib/install-cli'
 import {
-  executeMenuItem,
-  moveToApplicationsFolder,
-  isWindowFocused,
-  showOpenDialog,
+    executeMenuItem,
+    moveToApplicationsFolder,
+    isWindowFocused,
+    showOpenDialog,
 } from '../main-process-proxy'
 import {
-  CommitStatusStore,
-  StatusCallBack,
+    CommitStatusStore,
+    StatusCallBack,
 } from '../../lib/stores/commit-status-store'
 import { MergeTreeResult } from '../../models/merge'
 import { UncommittedChangesStrategy } from '../../models/uncommitted-changes-strategy'
@@ -111,11 +111,11 @@ import { DragElement, DragType } from '../../models/drag-drop'
 import { ILastThankYou } from '../../models/last-thank-you'
 import { dragAndDropManager } from '../../lib/drag-and-drop-manager'
 import {
-  CreateBranchStep,
-  MultiCommitOperationDetail,
-  MultiCommitOperationKind,
-  MultiCommitOperationStep,
-  MultiCommitOperationStepKind,
+    CreateBranchStep,
+    MultiCommitOperationDetail,
+    MultiCommitOperationKind,
+    MultiCommitOperationStep,
+    MultiCommitOperationStepKind,
 } from '../../models/multi-commit-operation'
 import { getMultiCommitOperationChooseBranchStep } from '../../lib/multi-commit-operation'
 import { ICombinedRefCheck, IRefCheck } from '../../lib/ci-checks/ci-checks'
@@ -1064,7 +1064,18 @@ export class Dispatcher {
     return this.appStore._endWelcomeFlow()
   }
 
-  /** Set the commit message input's focus. */
+  public closeTab(
+    repository: Repository | CloningRepository
+  ): Promise<void> {
+    return this.appStore._closeTab(repository)
+  }
+
+  public selectTab(
+    repository: Repository | CloningRepository
+  ): Promise<void> {
+    return this.appStore._selectTab(repository)
+  }
+
   public setCommitMessageFocus(focus: boolean) {
     this.appStore._setCommitMessageFocus(focus)
   }

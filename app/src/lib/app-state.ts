@@ -12,18 +12,18 @@ import { IRemote } from '../models/remote'
 import { CloneRepositoryTab } from '../models/clone-repository-tab'
 import { BranchesTab } from '../models/branches-tab'
 import {
-  PullRequest,
-  PullRequestSuggestedNextAction,
+    PullRequest,
+    PullRequestSuggestedNextAction,
 } from '../models/pull-request'
 import { Author } from '../models/author'
 import { MergeTreeResult } from '../models/merge'
 import { ICommitMessage } from '../models/commit-message'
 import {
-  IRevertProgress,
-  Progress,
-  ICheckoutProgress,
-  ICloneProgress,
-  IMultiCommitOperationProgress,
+    IRevertProgress,
+    Progress,
+    ICheckoutProgress,
+    ICloneProgress,
+    IMultiCommitOperationProgress,
 } from '../models/progress'
 
 import { SignInState } from './stores/sign-in-store'
@@ -41,13 +41,13 @@ import { UncommittedChangesStrategy } from '../models/uncommitted-changes-strate
 import { DragElement } from '../models/drag-drop'
 import { ILastThankYou } from '../models/last-thank-you'
 import {
-  MultiCommitOperationDetail,
-  MultiCommitOperationStep,
+    MultiCommitOperationDetail,
+    MultiCommitOperationStep,
 } from '../models/multi-commit-operation'
 import type {
-  HookProgress,
-  IChangesetData,
-  TerminalOutputListener,
+    HookProgress,
+    IChangesetData,
+    TerminalOutputListener,
 } from './git'
 import { Popup } from '../models/popup'
 import { RepoRulesInfo } from '../models/repo-rules'
@@ -88,9 +88,8 @@ export interface IAppState {
    */
   readonly recentRepositories: ReadonlyArray<number>
 
-  /**
-   * A cache of the latest repository state values, keyed by the repository id
-   */
+  readonly openTabs: ReadonlyArray<Repository | CloningRepository>
+
   readonly localRepositoryStateLookup: Map<number, ILocalRepositoryState>
 
   readonly selectedState: PossibleSelections | null
