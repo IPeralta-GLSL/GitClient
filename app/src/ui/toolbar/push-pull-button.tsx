@@ -9,10 +9,10 @@ import { Resizable } from '../resizable'
 
 import { Dispatcher } from '../dispatcher'
 import {
-  Octicon,
-  OcticonSymbol,
-  OcticonSymbolVariant,
-  syncClockwise,
+    Octicon,
+    OcticonSymbol,
+    OcticonSymbolVariant,
+    syncClockwise,
 } from '../octicons'
 import * as octicons from '../octicons/octicons.generated'
 import { RelativeTime } from '../relative-time'
@@ -20,10 +20,10 @@ import { RelativeTime } from '../relative-time'
 import { ToolbarButton, ToolbarButtonStyle } from './button'
 import classNames from 'classnames'
 import {
-  DropdownState,
-  IToolbarDropdownProps,
-  ToolbarDropdown,
-  ToolbarDropdownStyle,
+    DropdownState,
+    IToolbarDropdownProps,
+    ToolbarDropdown,
+    ToolbarDropdownStyle,
 } from './dropdown'
 import { FoldoutType, IConstrainedValue } from '../../lib/app-state'
 import { ForcePushBranchState } from '../../lib/rebase'
@@ -474,7 +474,16 @@ export class PushPullButton extends React.Component<
     const { ahead, behind } = aheadBehind
 
     if (ahead === 0 && behind === 0 && numTagsToPush === 0) {
-      return this.fetchButton(remoteName, lastFetched, this.fetch)
+      return (
+        <ToolbarButton
+          {...this.defaultButtonProps()}
+          title={`Up to date`}
+          description={renderLastFetched(lastFetched)}
+          icon={octicons.check}
+          disabled={false}
+          onClick={this.fetch}
+        />
+      )
     }
 
     if (forcePushBranchState === ForcePushBranchState.Recommended) {
@@ -590,26 +599,7 @@ export class PushPullButton extends React.Component<
         icon={octicons.upload}
         onClick={onClick}
         className={className}
-        dropdownContentRenderer={this.getDropdownContentRenderer([
-          DropdownItemType.Fetch,
-        ])}
-      />
-    )
-  }
-
-  private fetchButton(
-    remoteName: string,
-    lastFetched: Date | null,
-    onClick: () => void
-  ) {
-    const title = `Fetch ${remoteName}`
-    return (
-      <ToolbarButton
-        {...this.defaultButtonProps()}
-        title={title}
-        description={renderLastFetched(lastFetched)}
-        icon={syncClockwise}
-        onClick={onClick}
+        dropdownContentRenderer={this.getDropdownContentRenderer([])}
       />
     )
   }
@@ -627,7 +617,7 @@ export class PushPullButton extends React.Component<
       ? `Pull ${remoteName} with rebase`
       : `Pull ${remoteName}`
 
-    const dropdownItemTypes = [DropdownItemType.Fetch]
+    const dropdownItemTypes: DropdownItemType[] = []
 
     if (forcePushBranchState !== ForcePushBranchState.NotAvailable) {
       dropdownItemTypes.push(DropdownItemType.ForcePush)
@@ -665,9 +655,7 @@ export class PushPullButton extends React.Component<
         description={renderLastFetched(lastFetched)}
         icon={octicons.arrowUp}
         onClick={onClick}
-        dropdownContentRenderer={this.getDropdownContentRenderer([
-          DropdownItemType.Fetch,
-        ])}
+        dropdownContentRenderer={this.getDropdownContentRenderer([])}
       >
         {renderAheadBehind(aheadBehind, numTagsToPush)}
       </ToolbarDropdown>
@@ -688,9 +676,7 @@ export class PushPullButton extends React.Component<
         description={renderLastFetched(lastFetched)}
         icon={forcePushIcon}
         onClick={onClick}
-        dropdownContentRenderer={this.getDropdownContentRenderer([
-          DropdownItemType.Fetch,
-        ])}
+        dropdownContentRenderer={this.getDropdownContentRenderer([])}
       >
         {renderAheadBehind(aheadBehind, numTagsToPush)}
       </ToolbarDropdown>

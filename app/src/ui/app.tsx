@@ -45,21 +45,20 @@ import { TitleBar, ZoomInfo, FullScreenInfo } from './window'
 
 import { RepositoryTabBar } from './tab-bar/repository-tab-bar'
 import { StartTab } from './start-tab/start-tab'
-import { RepositoriesList } from './repositories-list'
 import { RepositoryView } from './repository'
 import { RenameBranch } from './rename-branch'
 import { DeleteBranch, DeleteRemoteBranch } from './delete-branch'
 import { CloningRepositoryView } from './cloning-repository'
 import {
     Toolbar,
-    ToolbarDropdown,
+    ToolbarButton,
+    ToolbarButtonStyle,
     DropdownState,
     PushPullButton,
     BranchDropdown,
     RevertProgress,
 } from './toolbar'
-import { iconForRepository, OcticonSymbol } from './octicons'
-import * as octicons from './octicons/octicons.generated'
+import { syncClockwise } from './octicons'
 import {
     showCertificateTrustDialog,
     sendReady,
@@ -157,14 +156,11 @@ import { ConfirmForcePush } from './rebase/confirm-force-push'
 import { PullRequestChecksFailed } from './notifications/pull-request-checks-failed'
 import { CICheckRunRerunDialog } from './check-runs/ci-check-run-rerun-dialog'
 import { WarnForcePushDialog } from './multi-commit-operation/dialog/warn-force-push-dialog'
-import { clamp } from '../lib/clamp'
-import { generateRepositoryListContextMenu } from './repositories-list/repository-list-item-context-menu'
 import * as ipcRenderer from '../lib/ipc-renderer'
 import { DiscardChangesRetryDialog } from './discard-changes/discard-changes-retry-dialog'
 import { PullRequestReview } from './notifications/pull-request-review'
 import { getRepositoryType } from '../lib/git'
 import { SSHUserPassword } from './ssh/ssh-user-password'
-import { showContextualMenu } from '../lib/menu-item'
 import { UnreachableCommitsDialog } from './history/unreachable-commits-dialog'
 import { OpenPullRequestDialog } from './open-pull-request/open-pull-request-dialog'
 import { sendNonFatalException } from '../lib/helpers/non-fatal-exception'
@@ -2905,37 +2901,6 @@ export class App extends React.Component<IAppProps, IAppState> {
     this.props.dispatcher.addBlankTab()
   }
 
-  private renderRepositoryList = (): JSX.Element => {
-    const selectedRepository = this.state.selectedState
-      ? this.state.selectedState.repository
-      : null
-
-    const { useCustomShell, selectedShell } = this.state
-    const filterText = this.state.repositoryFilterText
-    return (
-      <RepositoriesList
-        filterText={filterText}
-        onFilterTextChanged={this.onRepositoryFilterTextChanged}
-        selectedRepository={selectedRepository}
-        onSelectionChanged={this.onSelectionChanged}
-        repositories={this.state.repositories}
-        recentRepositories={this.state.recentRepositories}
-        localRepositoryStateLookup={this.state.localRepositoryStateLookup}
-        askForConfirmationOnRemoveRepository={
-          this.state.askForConfirmationOnRepositoryRemoval
-        }
-        onRemoveRepository={this.removeRepository}
-        onViewOnGitHub={this.viewOnGitHub}
-        onOpenInShell={this.openInShell}
-        onShowRepository={this.showRepository}
-        onOpenInExternalEditor={this.openInExternalEditor}
-        externalEditorLabel={this.externalEditorLabel}
-        shellLabel={useCustomShell ? undefined : selectedShell}
-        dispatcher={this.props.dispatcher}
-      />
-    )
-  }
-
   private viewOnGitHub = (
     repository: Repository | CloningRepository | null
   ) => {
@@ -3030,100 +2995,69 @@ export class App extends React.Component<IAppProps, IAppState> {
     }
   }
 
-  private renderRepositoryToolbarButton() {
+  private renderFetchButton() {
     const selection = this.state.selectedState
-
-    const repository = selection ? selection.repository : null
-
-    let icon: OcticonSymbol
-    let title: string
-    if (repository) {
-      const alias = repository instanceof Repository ? repository.alias : null
-      icon = iconForRepository(repository)
-      title = alias ?? repository.name
-    } else if (this.state.repositories.length > 0) {
-      icon = octicons.repo
-      title = __DARWIN__ ? 'Select a Repository' : 'Select a repository'
-    } else {
-      icon = octicons.repo
-      title = __DARWIN__ ? 'No Repositories' : 'No repositories'
+    if (!selection || selection.type !== SelectionType.Repository) {
+      return null
     }
 
-    const isOpen =
-      this.state.currentFoldout &&
-      this.state.currentFoldout.type === FoldoutType.Repository
+    const state = selection.state
+    const remoteName = state.remote ? state.remote.name : null
 
-    const currentState: DropdownState = isOpen ? 'open' : 'closed'
-
-    const tooltip = repository && !isOpen ? repository.path : undefined
-
-    const foldoutWidth = clamp(this.state.sidebarWidth)
-
-    const foldoutStyle: React.CSSProperties = {
-      position: 'absolute',
-      marginLeft: 0,
-      width: foldoutWidth,
-      minWidth: foldoutWidth,
-      height: '100%',
-      top: 0,
+    if (remoteName === null) {
+      return null
     }
 
-    /** The dropdown focus trap will stop focus event propagation we made need
-     * in some of our dialogs (noticed with Lists). Disabled this when dialogs
-     * are open */
-    const enableFocusTrap = this.state.currentPopup === null
+    const lastFetched = state.lastFetched
+    const isFetching = state.isPushPullFetchInProgress
+    const description = lastFetched
+      ? `Last fetched ${this.formatRelativeTime(lastFetched)}`
+      : 'Never fetched'
 
     return (
-      <ToolbarDropdown
-        icon={icon}
-        title={title}
-        description={__DARWIN__ ? 'Current Repository' : 'Current repository'}
-        tooltip={tooltip}
-        foldoutStyle={foldoutStyle}
-        onContextMenu={this.onRepositoryToolbarButtonContextMenu}
-        onDropdownStateChanged={this.onRepositoryDropdownStateChanged}
-        dropdownContentRenderer={this.renderRepositoryList}
-        dropdownState={currentState}
-        enableFocusTrap={enableFocusTrap}
+      <ToolbarButton
+        title={`Fetch ${remoteName}`}
+        description={description}
+        icon={syncClockwise}
+        iconClassName={isFetching ? 'spin' : ''}
+        onClick={this.onFetchClicked}
+        disabled={isFetching}
+        className="fetch-button"
+        style={ToolbarButtonStyle.Subtitle}
       />
     )
   }
 
-  private onRepositoryToolbarButtonContextMenu = () => {
-    const repository = this.state.selectedState?.repository
-    if (repository === undefined) {
+  private formatRelativeTime(date: Date): string {
+    const now = Date.now()
+    const diff = now - date.getTime()
+    const seconds = Math.floor(diff / 1000)
+    const minutes = Math.floor(seconds / 60)
+    const hours = Math.floor(minutes / 60)
+    const days = Math.floor(hours / 24)
+
+    if (seconds < 60) {
+      return 'just now'
+    }
+    if (minutes < 60) {
+      return `${minutes}m ago`
+    }
+    if (hours < 24) {
+      return `${hours}h ago`
+    }
+    return `${days}d ago`
+  }
+
+  private onFetchClicked = () => {
+    const selection = this.state.selectedState
+    if (!selection || selection.type !== SelectionType.Repository) {
       return
     }
 
-    const onChangeRepositoryAlias = (repository: Repository) => {
-      this.props.dispatcher.showPopup({
-        type: PopupType.ChangeRepositoryAlias,
-        repository,
-      })
-    }
-
-    const onRemoveRepositoryAlias = (repository: Repository) => {
-      this.props.dispatcher.changeRepositoryAlias(repository, null)
-    }
-
-    const items = generateRepositoryListContextMenu({
-      onRemoveRepository: this.removeRepository,
-      onShowRepository: this.showRepository,
-      onOpenInShell: this.openInShell,
-      onOpenInExternalEditor: this.openInExternalEditor,
-      askForConfirmationOnRemoveRepository:
-        this.state.askForConfirmationOnRepositoryRemoval,
-      externalEditorLabel: this.externalEditorLabel,
-      onChangeRepositoryAlias: onChangeRepositoryAlias,
-      onRemoveRepositoryAlias: onRemoveRepositoryAlias,
-      onViewOnGitHub: this.viewOnGitHub,
-      repository: repository,
-      shellLabel: this.state.useCustomShell
-        ? undefined
-        : this.state.selectedShell,
-    })
-
-    showContextualMenu(items)
+    this.props.dispatcher.fetch(
+      selection.repository,
+      FetchType.UserInitiatedTask
+    )
   }
 
   private renderPushPullToolbarButton() {
@@ -3388,15 +3322,11 @@ export class App extends React.Component<IAppProps, IAppState> {
       return null
     }
 
-    const width = clamp(this.state.sidebarWidth)
-
     return (
       <Toolbar id="desktop-app-toolbar">
-        <div className="sidebar-section" style={{ width }}>
-          {this.renderRepositoryToolbarButton()}
-        </div>
         {this.renderBranchToolbarButton()}
         {this.renderPushPullToolbarButton()}
+        {this.renderFetchButton()}
       </Toolbar>
     )
   }
@@ -3559,15 +3489,6 @@ export class App extends React.Component<IAppProps, IAppState> {
         {this.renderFullScreenInfo()}
       </div>
     )
-  }
-
-  private onRepositoryFilterTextChanged = (text: string) => {
-    this.props.dispatcher.setRepositoryFilterText(text)
-  }
-
-  private onSelectionChanged = (repository: Repository | CloningRepository) => {
-    this.props.dispatcher.selectRepository(repository)
-    this.props.dispatcher.closeFoldout(FoldoutType.Repository)
   }
 
   private onViewCommitOnGitHub = async (SHA: string, filePath?: string) => {
