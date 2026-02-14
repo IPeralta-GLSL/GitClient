@@ -2890,8 +2890,8 @@ export class App extends React.Component<IAppProps, IAppState> {
         id="desktop-app-contents"
         className={this.getDesktopAppContentsClassNames()}
       >
-        {this.renderToolbar()}
         {this.renderTabBar()}
+        {this.renderToolbar()}
         {this.renderBanner()}
         {this.renderRepository()}
         {this.renderPopups()}
@@ -2911,6 +2911,7 @@ export class App extends React.Component<IAppProps, IAppState> {
         selectedRepository={selectedRepository}
         onSelectTab={this.onSelectTab}
         onCloseTab={this.onCloseTab}
+        onAddTab={this.onAddTab}
       />
     )
   }
@@ -2921,6 +2922,10 @@ export class App extends React.Component<IAppProps, IAppState> {
 
   private onCloseTab = (repository: Repository | CloningRepository) => {
     this.props.dispatcher.closeTab(repository)
+  }
+
+  private onAddTab = () => {
+    this.props.dispatcher.showFoldout({ type: FoldoutType.Repository })
   }
 
   private renderRepositoryList = (): JSX.Element => {

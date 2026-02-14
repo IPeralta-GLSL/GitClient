@@ -62,32 +62,38 @@ interface IRepositoryTabBarProps {
   readonly selectedRepository: Repository | CloningRepository | null
   readonly onSelectTab: (repository: Repository | CloningRepository) => void
   readonly onCloseTab: (repository: Repository | CloningRepository) => void
+  readonly onAddTab: () => void
 }
 
 export class RepositoryTabBar extends React.Component<IRepositoryTabBarProps> {
   public render() {
-    if (this.props.openTabs.length === 0) {
-      return null
-    }
-
     return (
       <div className="repository-tab-bar">
-        {this.props.openTabs.map(repo => {
-          const key =
-            repo instanceof Repository ? `repo-${repo.id}` : `clone-${repo.id}`
-          const isActive =
-            this.props.selectedRepository !== null &&
-            this.props.selectedRepository === repo
-          return (
-            <RepositoryTab
-              key={key}
-              repository={repo}
-              isActive={isActive}
-              onSelectTab={this.props.onSelectTab}
-              onCloseTab={this.props.onCloseTab}
-            />
-          )
-        })}
+        <div className="tab-list">
+          {this.props.openTabs.map(repo => {
+            const key =
+              repo instanceof Repository ? `repo-${repo.id}` : `clone-${repo.id}`
+            const isActive =
+              this.props.selectedRepository !== null &&
+              this.props.selectedRepository === repo
+            return (
+              <RepositoryTab
+                key={key}
+                repository={repo}
+                isActive={isActive}
+                onSelectTab={this.props.onSelectTab}
+                onCloseTab={this.props.onCloseTab}
+              />
+            )
+          })}
+        </div>
+        <button
+          className="tab-add"
+          onClick={this.props.onAddTab}
+          aria-label="Open repository"
+        >
+          <Octicon symbol={octicons.plus} />
+        </button>
       </div>
     )
   }
