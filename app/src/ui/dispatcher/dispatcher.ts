@@ -1076,6 +1076,10 @@ export class Dispatcher {
     return this.appStore._selectTab(repository)
   }
 
+  public addBlankTab(): void {
+    this.appStore._addBlankTab()
+  }
+
   public setCommitMessageFocus(focus: boolean) {
     this.appStore._setCommitMessageFocus(focus)
   }

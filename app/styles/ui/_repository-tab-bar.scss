@@ -29,14 +29,16 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
+    width: 32px;
+    min-width: 32px;
     flex-shrink: 0;
     border: none;
     background: none;
     color: var(--toolbar-text-secondary-color);
     cursor: pointer;
-    border-left: 1px solid var(--box-border-color);
     transition: background-color 0.15s ease, color 0.15s ease;
+    border-radius: var(--border-radius);
+    margin: 4px 4px;
 
     &:hover {
       background-color: var(--toolbar-button-hover-background-color);
@@ -44,8 +46,8 @@
     }
 
     .octicon {
-      width: 16px;
-      height: 16px;
+      width: 14px;
+      height: 14px;
     }
   }
 

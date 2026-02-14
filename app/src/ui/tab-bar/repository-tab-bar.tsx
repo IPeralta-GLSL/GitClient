@@ -86,14 +86,14 @@ export class RepositoryTabBar extends React.Component<IRepositoryTabBarProps> {
               />
             )
           })}
+          <button
+            className="tab-add"
+            onClick={this.props.onAddTab}
+            aria-label="New tab"
+          >
+            <Octicon symbol={octicons.plus} />
+          </button>
         </div>
-        <button
-          className="tab-add"
-          onClick={this.props.onAddTab}
-          aria-label="Open repository"
-        >
-          <Octicon symbol={octicons.plus} />
-        </button>
       </div>
     )
   }

@@ -90,6 +90,8 @@ export interface IAppState {
 
   readonly openTabs: ReadonlyArray<Repository | CloningRepository>
 
+  readonly showStartPage: boolean
+
   readonly localRepositoryStateLookup: Map<number, ILocalRepositoryState>
 
   readonly selectedState: PossibleSelections | null

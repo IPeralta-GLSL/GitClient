@@ -44,6 +44,7 @@ import { CloningRepository } from '../models/cloning-repository'
 import { TitleBar, ZoomInfo, FullScreenInfo } from './window'
 
 import { RepositoryTabBar } from './tab-bar/repository-tab-bar'
+import { StartTab } from './start-tab/start-tab'
 import { RepositoriesList } from './repositories-list'
 import { RepositoryView } from './repository'
 import { RenameBranch } from './rename-branch'
@@ -86,7 +87,6 @@ import { About } from './about'
 import { Publish } from './publish-repository'
 import { Acknowledgements } from './acknowledgements'
 import { UntrustedCertificate } from './untrusted-certificate'
-import { NoRepositoriesView } from './no-repositories'
 import { ConfirmRemoveRepository } from './remove-repository'
 import { TermsAndConditions } from './terms-and-conditions'
 import { PushBranchCommits } from './branches'
@@ -813,29 +813,6 @@ export class App extends React.Component<IAppProps, IAppState> {
       type: PopupType.CloneRepository,
       initialURL,
     })
-  }
-
-  private showCreateTutorialRepositoryPopup = () => {
-    const account =
-      this.state.accounts.find(isDotComAccount) ?? this.state.accounts.at(0)
-
-    if (!account) {
-      return
-    }
-
-    this.props.dispatcher.showPopup({
-      type: PopupType.CreateTutorialRepository,
-      account,
-    })
-  }
-
-  private onResumeTutorialRepository = () => {
-    const tutorialRepository = this.getSelectedTutorialRepository()
-    if (!tutorialRepository) {
-      return
-    }
-
-    this.props.dispatcher.resumeTutorial(tutorialRepository)
   }
 
   private getSelectedTutorialRepository() {
@@ -2925,7 +2902,7 @@ export class App extends React.Component<IAppProps, IAppState> {
   }
 
   private onAddTab = () => {
-    this.props.dispatcher.showFoldout({ type: FoldoutType.Repository })
+    this.props.dispatcher.addBlankTab()
   }
 
   private renderRepositoryList = (): JSX.Element => {
@@ -3407,10 +3384,7 @@ export class App extends React.Component<IAppProps, IAppState> {
   }
 
   private renderToolbar() {
-    /**
-     * No toolbar if we're in the blank slate view.
-     */
-    if (this.inNoRepositoriesViewState()) {
+    if (this.inNoRepositoriesViewState() || this.state.showStartPage) {
       return null
     }
 
@@ -3427,30 +3401,39 @@ export class App extends React.Component<IAppProps, IAppState> {
     )
   }
 
-  private renderRepository() {
-    const { accounts } = this.state
+  private renderStartTab() {
+    return (
+      <StartTab
+        repositories={this.state.repositories}
+        recentRepositories={this.state.recentRepositories}
+        onSelectRepository={this.onStartTabSelectRepo}
+        onClone={this.showCloneRepo}
+        onCreate={this.showCreateRepository}
+        onAdd={this.showAddLocalRepo}
+      />
+    )
+  }
 
+  private onStartTabSelectRepo = (
+    repository: Repository | CloningRepository
+  ) => {
+    this.props.dispatcher.selectRepository(repository)
+  }
+
+  private renderRepository() {
     if (this.inNoRepositoriesViewState()) {
-      return (
-        <NoRepositoriesView
-          accounts={accounts}
-          onCreate={this.showCreateRepository}
-          onClone={this.showCloneRepo}
-          onAdd={this.showAddLocalRepo}
-          onCreateTutorialRepository={this.showCreateTutorialRepositoryPopup}
-          onResumeTutorialRepository={this.onResumeTutorialRepository}
-          tutorialPaused={this.isTutorialPaused()}
-          apiRepositories={this.state.apiRepositories}
-          onRefreshRepositories={this.onRefreshRepositories}
-        />
-      )
+      return this.renderStartTab()
+    }
+
+    if (this.state.showStartPage) {
+      return this.renderStartTab()
     }
 
     const state = this.state
 
     const selectedState = state.selectedState
     if (!selectedState) {
-      return <NoRepositorySelected />
+      return this.renderStartTab()
     }
 
     if (selectedState.type === SelectionType.Repository) {
@@ -3764,8 +3747,4 @@ export class App extends React.Component<IAppProps, IAppState> {
       this.props.dispatcher.incrementMetric('dragStartedAndCanceledCount')
     }
   }
-}
-
-function NoRepositorySelected() {
-  return <div className="panel blankslate">No repository selected</div>
 }

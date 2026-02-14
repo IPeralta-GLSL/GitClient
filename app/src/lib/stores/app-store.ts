@@ -479,6 +479,8 @@ export class AppStore extends TypedBaseStore<IAppState> {
 
   private openTabs: Array<Repository | CloningRepository> = []
 
+  private showStartPage = false
+
   private currentBackgroundFetcher: BackgroundFetcher | null = null
 
   private currentBranchPruner: BranchPruner | null = null
@@ -1047,6 +1049,7 @@ export class AppStore extends TypedBaseStore<IAppState> {
       repositories,
       recentRepositories: this.recentRepositories,
       openTabs: this.openTabs,
+      showStartPage: this.showStartPage,
       localRepositoryStateLookup: this.localRepositoryStateLookup,
       windowState: this.windowState,
       windowZoomFactor: this.windowZoomFactor,
@@ -1908,6 +1911,7 @@ export class AppStore extends TypedBaseStore<IAppState> {
     }
 
     this.selectedRepository = repository
+    this.showStartPage = false
 
     if (repository !== null) {
       const alreadyOpen = this.openTabs.some(t => t.id === repository.id)
@@ -5486,11 +5490,12 @@ export class AppStore extends TypedBaseStore<IAppState> {
       this.selectedRepository !== null &&
       this.selectedRepository.id === repository.id
     ) {
-      const nextTab =
-        this.openTabs.length > 0
-          ? this.openTabs[this.openTabs.length - 1]
-          : null
-      await this._selectRepository(nextTab)
+      if (this.openTabs.length > 0) {
+        await this._selectRepository(this.openTabs[this.openTabs.length - 1])
+      } else {
+        this.showStartPage = true
+        this.emitUpdate()
+      }
       return
     }
 
@@ -5501,6 +5506,11 @@ export class AppStore extends TypedBaseStore<IAppState> {
     repository: Repository | CloningRepository
   ): Promise<void> {
     await this._selectRepository(repository)
+  }
+
+  public _addBlankTab(): void {
+    this.showStartPage = true
+    this.emitUpdate()
   }
 
   public _setCommitMessageFocus(focus: boolean) {
