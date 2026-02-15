@@ -19,6 +19,7 @@ import { RelativeTime } from '../relative-time'
 
 import { ToolbarButton, ToolbarButtonStyle } from './button'
 import classNames from 'classnames'
+import { t } from '../../lib/i18n'
 import { IConstrainedValue } from '../../lib/app-state'
 import { ForcePushBranchState } from '../../lib/rebase'
 import { AriaLiveContainer } from '../accessibility/aria-live-container'
@@ -335,7 +336,7 @@ export class PushPullButton extends React.Component<
       return (
         <ToolbarButton
           {...this.defaultButtonProps()}
-          title={`Up to date`}
+          title={t('upToDate')}
           description={renderLastFetched(lastFetched)}
           icon={octicons.check}
           disabled={false}
@@ -394,8 +395,8 @@ export class PushPullButton extends React.Component<
     return (
       <ToolbarButton
         {...this.defaultButtonProps()}
-        title="Publish repository"
-        description="Publish this repository to GitHub"
+        title={t('publishRepository')}
+        description={t('publishRepositoryDesc')}
         className="push-pull-button"
         icon={octicons.upload}
         style={ToolbarButtonStyle.Subtitle}
@@ -408,8 +409,8 @@ export class PushPullButton extends React.Component<
     return (
       <ToolbarButton
         {...this.defaultButtonProps()}
-        title="Publish branch"
-        description="Cannot publish: no commits"
+        title={t('publishBranch')}
+        description={t('cannotPublishUnborn')}
         icon={octicons.upload}
         disabled={true}
       />
@@ -418,13 +419,13 @@ export class PushPullButton extends React.Component<
 
   private detachedHeadButton(rebaseInProgress: boolean) {
     const description = rebaseInProgress
-      ? 'Rebase in progress'
-      : 'Cannot publish detached HEAD'
+      ? t('rebaseInProgress')
+      : t('cannotPublishDetached')
 
     return (
       <ToolbarButton
         {...this.defaultButtonProps()}
-        title="Publish branch"
+        title={t('publishBranch')}
         description={description}
         icon={octicons.upload}
         disabled={true}
@@ -438,8 +439,8 @@ export class PushPullButton extends React.Component<
     shouldNudge: boolean
   ) {
     const description = isGitHub
-      ? 'Publish this branch to GitHub'
-      : 'Publish this branch to the remote'
+      ? t('publishBranchToGitHub')
+      : t('publishBranchToRemote')
 
     const className = classNames(
       this.defaultButtonProps().className,
@@ -452,7 +453,7 @@ export class PushPullButton extends React.Component<
     return (
       <ToolbarButton
         {...this.defaultButtonProps()}
-        title="Publish branch"
+        title={t('publishBranch')}
         description={description}
         icon={octicons.upload}
         onClick={onClick}
@@ -471,8 +472,8 @@ export class PushPullButton extends React.Component<
     onClick: () => void
   ) {
     const title = pullWithRebase
-      ? `Pull ${remoteName} with rebase`
-      : `Pull ${remoteName}`
+      ? `${t('pullOrigin')} ${remoteName} with rebase`
+      : `${t('pullOrigin')} ${remoteName}`
 
     return (
       <ToolbarButton
@@ -497,7 +498,7 @@ export class PushPullButton extends React.Component<
     return (
       <ToolbarButton
         {...this.defaultButtonProps()}
-        title={`Push ${remoteName}`}
+        title={`${t('pushOrigin')} ${remoteName}`}
         description={renderLastFetched(lastFetched)}
         icon={octicons.arrowUp}
         onClick={onClick}
@@ -517,7 +518,7 @@ export class PushPullButton extends React.Component<
     return (
       <ToolbarButton
         {...this.defaultButtonProps()}
-        title={`Force push ${remoteName}`}
+        title={`${t('forcePushOrigin')} ${remoteName}`}
         description={renderLastFetched(lastFetched)}
         icon={forcePushIcon}
         onClick={onClick}

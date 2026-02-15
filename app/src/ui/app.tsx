@@ -60,6 +60,7 @@ import {
 } from './toolbar'
 import { syncClockwise } from './octicons'
 import * as octicons from './octicons/octicons.generated'
+import { t } from '../lib/i18n'
 import {
     showCertificateTrustDialog,
     sendReady,
@@ -3004,7 +3005,7 @@ export class App extends React.Component<IAppProps, IAppState> {
 
     return (
       <ToolbarButton
-        title="Open folder"
+        title={t('openFolder')}
         description={selection.repository.path}
         icon={octicons.fileDirectoryFill}
         onClick={this.onOpenFolder}
@@ -3039,12 +3040,12 @@ export class App extends React.Component<IAppProps, IAppState> {
     const lastFetched = state.lastFetched
     const isFetching = state.isPushPullFetchInProgress
     const description = lastFetched
-      ? `Last fetched ${this.formatRelativeTime(lastFetched)}`
-      : 'Never fetched'
+      ? `${t('lastFetched')} ${this.formatRelativeTime(lastFetched)}`
+      : t('neverFetched')
 
     return (
       <ToolbarButton
-        title={`Fetch ${remoteName}`}
+        title={`${t('fetchOrigin')} ${remoteName}`}
         description={description}
         icon={syncClockwise}
         iconClassName={isFetching ? 'spin' : ''}
@@ -3065,15 +3066,15 @@ export class App extends React.Component<IAppProps, IAppState> {
     const days = Math.floor(hours / 24)
 
     if (seconds < 60) {
-      return 'just now'
+      return t('justNow')
     }
     if (minutes < 60) {
-      return `${minutes}m ago`
+      return `${minutes}${t('minutesAgo')}`
     }
     if (hours < 24) {
-      return `${hours}h ago`
+      return `${hours}${t('hoursAgo')}`
     }
-    return `${days}d ago`
+    return `${days}${t('daysAgo')}`
   }
 
   private onFetchClicked = () => {

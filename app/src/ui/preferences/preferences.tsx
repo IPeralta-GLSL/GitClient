@@ -42,6 +42,8 @@ import { Prompts } from './prompts'
 import { Repository } from '../../models/repository'
 import { Notifications } from './notifications'
 import { Accessibility } from './accessibility'
+import { Language } from './language'
+import { t, getLocale, AppLocale } from '../../lib/i18n'
 import {
   ICustomIntegration,
   TargetPathArgument,
@@ -145,6 +147,8 @@ interface IPreferencesState {
 
   readonly showDiffCheckMarks: boolean
 
+  readonly selectedLocale: AppLocale
+
   readonly selectedGitTabIndex?: number
   readonly enableGitHookEnv: boolean | undefined
   readonly cacheGitHookEnv: boolean | undefined
@@ -209,6 +213,7 @@ export class Preferences extends React.Component<
       isLoadingGitConfig: true,
       underlineLinks: this.props.underlineLinks,
       showDiffCheckMarks: this.props.showDiffCheckMarks,
+      selectedLocale: getLocale(),
       enableGitHookEnv: getHooksEnvEnabled(),
       cacheGitHookEnv: getCacheHooksEnv(),
       selectedGitHookEnvShell: getGitHookEnvShell(),
@@ -299,7 +304,7 @@ export class Preferences extends React.Component<
     return (
       <Dialog
         id="preferences"
-        title={__DARWIN__ ? 'Settings' : 'Options'}
+        title={__DARWIN__ ? t('settings') : t('options')}
         onDismissed={this.onCancel}
         onSubmit={this.onSave}
       >
@@ -312,35 +317,39 @@ export class Preferences extends React.Component<
           >
             <span id={this.getTabId(PreferencesTab.Accounts)}>
               <Octicon className="icon" symbol={octicons.home} />
-              Accounts
+              {t('accounts')}
             </span>
             <span id={this.getTabId(PreferencesTab.Integrations)}>
               <Octicon className="icon" symbol={octicons.person} />
-              Integrations
+              {t('integrations')}
             </span>
             <span id={this.getTabId(PreferencesTab.Git)}>
               <Octicon className="icon" symbol={octicons.gitCommit} />
-              Git
+              {t('git')}
             </span>
             <span id={this.getTabId(PreferencesTab.Appearance)}>
               <Octicon className="icon" symbol={octicons.paintbrush} />
-              Appearance
+              {t('appearance')}
             </span>
             <span id={this.getTabId(PreferencesTab.Notifications)}>
               <Octicon className="icon" symbol={octicons.bell} />
-              Notifications
+              {t('notifications')}
             </span>
             <span id={this.getTabId(PreferencesTab.Prompts)}>
               <Octicon className="icon" symbol={octicons.question} />
-              Prompts
+              {t('prompts')}
             </span>
             <span id={this.getTabId(PreferencesTab.Advanced)}>
               <Octicon className="icon" symbol={octicons.gear} />
-              Advanced
+              {t('advanced')}
             </span>
             <span id={this.getTabId(PreferencesTab.Accessibility)}>
               <Octicon className="icon" symbol={octicons.accessibility} />
-              Accessibility
+              {t('accessibility')}
+            </span>
+            <span id={this.getTabId(PreferencesTab.Language)}>
+              <Octicon className="icon" symbol={octicons.globe} />
+              {t('language')}
             </span>
           </TabBar>
 
@@ -377,6 +386,9 @@ export class Preferences extends React.Component<
         break
       case PreferencesTab.Accessibility:
         suffix = 'accessibility'
+        break
+      case PreferencesTab.Language:
+        suffix = 'language'
         break
       default:
         return assertNever(tab, `Unknown tab type: ${tab}`)
@@ -599,6 +611,14 @@ export class Preferences extends React.Component<
           />
         )
         break
+      case PreferencesTab.Language:
+        View = (
+          <Language
+            selectedLocale={this.state.selectedLocale}
+            onLocaleChanged={this.onSelectedLocaleChanged}
+          />
+        )
+        break
       default:
         return assertNever(index, `Unknown tab index: ${index}`)
     }
@@ -745,6 +765,11 @@ export class Preferences extends React.Component<
     this.setState({ showDiffCheckMarks })
   }
 
+  private onSelectedLocaleChanged = (locale: AppLocale) => {
+    this.props.dispatcher.setSelectedLocale(locale)
+    this.setState({ selectedLocale: locale })
+  }
+
   private onSelectedTabSizeChanged = (tabSize: number) => {
     this.props.dispatcher.setSelectedTabSize(tabSize)
   }
@@ -755,7 +780,7 @@ export class Preferences extends React.Component<
     return (
       <DialogFooter>
         <OkCancelButtonGroup
-          okButtonText="Save"
+          okButtonText={t('save')}
           okButtonDisabled={hasDisabledError}
         />
       </DialogFooter>

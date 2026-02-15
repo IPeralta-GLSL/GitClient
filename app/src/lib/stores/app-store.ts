@@ -17,6 +17,7 @@ import { Author } from '../../models/author'
 import { Branch, BranchType, IAheadBehind } from '../../models/branch'
 import { BranchesTab } from '../../models/branches-tab'
 import { CloneRepositoryTab } from '../../models/clone-repository-tab'
+import { getLocale, setLocale, AppLocale } from '../i18n'
 import { CloningRepository } from '../../models/cloning-repository'
 import {
     Commit,
@@ -584,6 +585,7 @@ export class AppStore extends TypedBaseStore<IAppState> {
 
   private selectedBranchesTab = BranchesTab.Branches
   private selectedTheme = ApplicationTheme.System
+  private selectedLocale: AppLocale = getLocale()
   private currentTheme: ApplicableTheme = ApplicationTheme.Light
   private selectedTabSize = tabSizeDefault
 
@@ -1103,6 +1105,7 @@ export class AppStore extends TypedBaseStore<IAppState> {
       selectedCloneRepositoryTab: this.selectedCloneRepositoryTab,
       selectedBranchesTab: this.selectedBranchesTab,
       selectedTheme: this.selectedTheme,
+      selectedLocale: this.selectedLocale,
       currentTheme: this.currentTheme,
       selectedTabSize: this.selectedTabSize,
       apiRepositories: this.apiRepositoriesStore.getState(),
@@ -7152,6 +7155,14 @@ export class AppStore extends TypedBaseStore<IAppState> {
   public _setSelectedTheme(theme: ApplicationTheme) {
     setPersistedTheme(theme)
     this.selectedTheme = theme
+    this.emitUpdate()
+
+    return Promise.resolve()
+  }
+
+  public _setSelectedLocale(locale: AppLocale) {
+    setLocale(locale)
+    this.selectedLocale = locale
     this.emitUpdate()
 
     return Promise.resolve()

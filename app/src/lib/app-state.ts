@@ -11,6 +11,7 @@ import { IMenu } from '../models/app-menu'
 import { IRemote } from '../models/remote'
 import { CloneRepositoryTab } from '../models/clone-repository-tab'
 import { BranchesTab } from '../models/branches-tab'
+import { AppLocale } from './i18n'
 import {
     PullRequest,
     PullRequestSuggestedNextAction,
@@ -297,6 +298,9 @@ export interface IAppState {
 
   /** The selected appearance (aka theme) preference */
   readonly selectedTheme: ApplicationTheme
+
+  /** The selected locale for i18n */
+  readonly selectedLocale: AppLocale
 
   /** The currently applied appearance (aka theme) */
   readonly currentTheme: ApplicableTheme

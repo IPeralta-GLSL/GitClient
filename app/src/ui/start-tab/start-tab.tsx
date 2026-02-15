@@ -4,6 +4,7 @@ import { CloningRepository } from '../../models/cloning-repository'
 import { Octicon } from '../octicons'
 import * as octicons from '../octicons/octicons.generated'
 import { Button } from '../lib/button'
+import { t } from '../../lib/i18n'
 
 interface IStartTabProps {
   readonly repositories: ReadonlyArray<Repository | CloningRepository>
@@ -54,7 +55,7 @@ export class StartTab extends React.Component<IStartTabProps> {
             <div className="start-tab-recent">
               <h2>
                 <Octicon symbol={octicons.history} />
-                Recent Repositories
+                {t('recentRepositories')}
               </h2>
               {recentRepos.length > 0 ? (
                 <ul className="recent-repo-list">
@@ -80,31 +81,31 @@ export class StartTab extends React.Component<IStartTabProps> {
                   })}
                 </ul>
               ) : (
-                <p className="no-recent">No recent repositories</p>
+                <p className="no-recent">{t('noRecentRepositories')}</p>
               )}
             </div>
 
             <div className="start-tab-actions">
-              <h2>Start</h2>
+              <h2>{t('start')}</h2>
               <Button className="start-action-btn" onClick={this.props.onClone}>
                 <Octicon symbol={octicons.repoClone} />
                 <div className="action-text">
-                  <span className="action-title">Clone Repository</span>
-                  <span className="action-desc">Clone a repository from a URL</span>
+                  <span className="action-title">{t('cloneRepository')}</span>
+                  <span className="action-desc">{t('cloneRepositoryDesc')}</span>
                 </div>
               </Button>
               <Button className="start-action-btn" onClick={this.props.onCreate}>
                 <Octicon symbol={octicons.plus} />
                 <div className="action-text">
-                  <span className="action-title">New Repository</span>
-                  <span className="action-desc">Create a new local repository</span>
+                  <span className="action-title">{t('newRepository')}</span>
+                  <span className="action-desc">{t('newRepositoryDesc')}</span>
                 </div>
               </Button>
               <Button className="start-action-btn" onClick={this.props.onAdd}>
                 <Octicon symbol={octicons.fileDirectory} />
                 <div className="action-text">
-                  <span className="action-title">Add Local Repository</span>
-                  <span className="action-desc">Add an existing repository from disk</span>
+                  <span className="action-title">{t('addLocalRepository')}</span>
+                  <span className="action-desc">{t('addLocalRepositoryDesc')}</span>
                 </div>
               </Button>
             </div>
