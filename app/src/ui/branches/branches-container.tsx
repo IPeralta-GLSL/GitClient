@@ -1,9 +1,10 @@
 import * as React from 'react'
+import { t } from '../../lib/i18n'
 
 import { PullRequest } from '../../models/pull-request'
 import {
-  Repository,
-  isRepositoryWithGitHubRepository,
+    Repository,
+    isRepositoryWithGitHubRepository,
 } from '../../models/repository'
 import { Branch } from '../../models/branch'
 import { BranchesTab } from '../../models/branches-tab'
@@ -24,16 +25,16 @@ import { BranchList } from './branch-list'
 import { PullRequestList } from './pull-request-list'
 import { IBranchListItem } from './group-branches'
 import {
-  getDefaultAriaLabelForBranch,
-  renderDefaultBranch,
+    getDefaultAriaLabelForBranch,
+    renderDefaultBranch,
 } from './branch-renderer'
 import { IMatches } from '../../lib/fuzzy-find'
 import { startTimer } from '../lib/timing'
 import { dragAndDropManager } from '../../lib/drag-and-drop-manager'
 import { DragType, DropTargetType } from '../../models/drag-drop'
 import {
-  enablePullRequestQuickView,
-  enableResizingToolbarButtons,
+    enablePullRequestQuickView,
+    enableResizingToolbarButtons,
 } from '../../lib/feature-flag'
 import { PullRequestQuickView } from '../pull-request-quick-view'
 import { Emoji } from '../../lib/emoji'
@@ -178,10 +179,10 @@ export class BranchesContainer extends React.Component<
         <Button
           className="merge-button"
           onClick={this.onMergeClick}
-          tooltip={`Choose a branch to merge into ${currentBranch.name}`}
+          tooltip={t('chooseBranchToMergeInto') + ` ${currentBranch.name}`}
         >
           <Octicon className="icon" symbol={octicons.gitMerge} />
-          Choose a branch to merge into <strong>{currentBranch.name}</strong>
+          {t('chooseBranchToMergeInto')} <strong>{currentBranch.name}</strong>
         </Button>
       </Row>
     )
@@ -207,10 +208,10 @@ export class BranchesContainer extends React.Component<
         onTabClicked={this.onTabClicked}
         selectedIndex={this.props.selectedTab}
         allowDragOverSwitching={true}
-      >
-        <span id="branches-tab">Branches</span>
+        >
+        <span id="branches-tab">{t('branches')}</span>
         <span id="pull-requests-tab" className="pull-request-tab">
-          {__DARWIN__ ? 'Pull Requests' : 'Pull requests'}
+          {__DARWIN__ ? t('pullRequestsDarwin') : t('pullRequests')}
           {this.renderOpenPullRequestsBubble()}
         </span>
       </TabBar>

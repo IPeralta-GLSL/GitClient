@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { t } from '../lib/i18n'
 
 import { UiView } from './ui-view'
 import { Dispatcher } from './dispatcher'
@@ -77,14 +78,14 @@ export class MissingRepository extends React.Component<
     if (!isPathUnsafe) {
       buttons.push(
         <Button key="locate" onClick={this.locate} type="submit">
-          Locate…
+          {t('locate')}
         </Button>
       )
 
       if (this.canCloneAgain()) {
         buttons.push(
           <Button key="clone-again" onClick={this.cloneAgain}>
-            Clone Again
+            {t('cloneAgain')}
           </Button>
         )
       }
@@ -97,14 +98,14 @@ export class MissingRepository extends React.Component<
           disabled={this.state.isTrustingPath}
         >
           {this.state.isTrustingPath && <Loading />}
-          {__DARWIN__ ? 'Trust Repository' : 'Trust repository'}
+          {__DARWIN__ ? t('trustRepositoryDarwin') : t('trustRepository')}
         </Button>
       )
     }
 
     buttons.push(
       <Button key="remove" onClick={this.remove}>
-        Remove
+        {t('remove')}
       </Button>
     )
 
@@ -113,7 +114,7 @@ export class MissingRepository extends React.Component<
         <UiView id="missing-repository-view">
           <div className="title-container">
             <div className="title">
-              {this.props.repository.name} is potentially unsafe
+              {this.props.repository.name} {t('isPotentiallyUnsafe')}
             </div>
             <div className="details">
               <p>
@@ -138,9 +139,9 @@ export class MissingRepository extends React.Component<
         <div className="title-container">
           <div className="title">Can't find "{this.props.repository.name}"</div>
           <div className="details">
-            It was last seen at{' '}
+            {t('itWasLastSeenAt')}{' '}
             <span className="path">{this.props.repository.path}</span>.{' '}
-            <LinkButton onClick={this.checkAgain}>Check&nbsp;again.</LinkButton>
+            <LinkButton onClick={this.checkAgain}>{t('checkAgain')}</LinkButton>
           </div>
         </div>
 

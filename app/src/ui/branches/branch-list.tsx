@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { t } from '../../lib/i18n'
 
 import { Branch, BranchType } from '../../models/branch'
 
@@ -10,9 +11,9 @@ import { Button } from '../lib/button'
 import { TextBox } from '../lib/text-box'
 
 import {
-  groupBranches,
-  IBranchListItem,
-  BranchGroupIdentifier,
+    groupBranches,
+    IBranchListItem,
+    BranchGroupIdentifier,
 } from './group-branches'
 import { NoBranches } from './no-branches'
 import { SelectionDirection, ClickSource } from '../lib/list'
@@ -327,12 +328,12 @@ export class BranchList extends React.Component<
     return (
       <div className="branches-list-item-tooltip list-item-tooltip">
         <div>
-          <div className="label">Full Name: </div>
+          <div className="label">{t('fullNameLabel')}</div>
           {name}
         </div>
         {absoluteDate && (
           <div>
-            <div className="label">Last Modified: </div>
+            <div className="label">{t('lastModifiedLabel')}</div>
             {absoluteDate}
           </div>
         )}

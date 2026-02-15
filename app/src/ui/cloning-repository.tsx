@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { t } from '../lib/i18n'
 
 import { CloningRepository } from '../models/cloning-repository'
 import { ICloneProgress } from '../models/progress'
@@ -26,7 +27,7 @@ export class CloningRepositoryView extends React.Component<
       <UiView id="cloning-repository-view">
         <div className="title-container">
           <Octicon symbol={octicons.desktopDownload} />
-          <div className="title">Cloning {this.props.repository.name}</div>
+          <div className="title">{t('cloning')} {this.props.repository.name}</div>
         </div>
         <progress value={progressValue} />
         <TooltippedContent

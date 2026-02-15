@@ -202,4 +202,55 @@ export interface ITranslations {
   readonly menuRepositorySettings: string
   readonly menuInstallCLI: string
   readonly menuExit: string
+  readonly cloning: string
+  readonly termsAndConditionsTitle: string
+  readonly connectingToGitHub: string
+  readonly openSourceLicensesAndNotices: string
+  readonly contact: string
+  readonly githubsLogos: string
+  readonly logos: string
+  readonly privacy: string
+  readonly additionalServices: string
+  readonly autoUpdateServices: string
+  readonly disclaimersAndLimitations: string
+  readonly miscellanea: string
+  readonly supportEmail: string
+
+  readonly sorryCantFindPullRequest: string
+  readonly hangTight: string
+  readonly youreAllSet: string
+  readonly noOpenPullRequestsIn: string
+  readonly loadingPullRequests: string
+  readonly wouldYouLike: string
+  readonly createANewBranch: string
+  readonly andGetGoing: string
+  readonly createAPullRequest: string
+  readonly fromTheCurrentBranch: string
+
+  readonly branches: string
+  readonly pullRequestsDarwin: string
+  readonly pullRequests: string
+  readonly chooseBranchToMergeInto: string
+
+  readonly baseLabel: string
+  readonly chooseABaseBranch: string
+
+  readonly fullNameLabel: string
+  readonly lastModifiedLabel: string
+
+  readonly sorryCantFindBranch: string
+  readonly doYouWantToCreateNewBranch: string
+  readonly createNewBranchDarwin: string
+  readonly createNewBranch: string
+  readonly protipPress: string
+  readonly toQuicklyCreateNewBranch: string
+
+  readonly locate: string
+  readonly cloneAgain: string
+  readonly trustRepositoryDarwin: string
+  readonly trustRepository: string
+  readonly remove: string
+  readonly isPotentiallyUnsafe: string
+  readonly itWasLastSeenAt: string
+  readonly checkAgain: string
 }
