@@ -51,6 +51,31 @@
     }
   }
 
+  .tab-settings {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    min-width: 36px;
+    flex-shrink: 0;
+    border: none;
+    background: none;
+    color: var(--toolbar-text-secondary-color);
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+    border-left: 1px solid var(--box-border-color);
+
+    &:hover {
+      background-color: var(--toolbar-button-hover-background-color);
+      color: var(--toolbar-text-color);
+    }
+
+    .octicon {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
   .repo-tab {
     display: flex;
     flex-direction: row;

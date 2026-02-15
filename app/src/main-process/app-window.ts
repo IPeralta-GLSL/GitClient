@@ -1,17 +1,17 @@
 import {
-  Menu,
-  app,
-  dialog,
-  BrowserWindow,
-  autoUpdater,
-  nativeTheme,
+    Menu,
+    app,
+    dialog,
+    BrowserWindow,
+    autoUpdater,
+    nativeTheme,
 } from 'electron'
 import { shell } from '../lib/app-shell'
 import { Emitter, Disposable } from 'event-kit'
 import { encodePathAsUrl } from '../lib/path'
 import {
-  getWindowState,
-  registerWindowStateChangedEvents,
+    getWindowState,
+    registerWindowStateChangedEvents,
 } from '../lib/window-state'
 import { MenuEvent } from './menu'
 import { URLActionType } from '../lib/parse-app-url'
@@ -23,8 +23,8 @@ import windowStateKeeper from 'electron-window-state'
 import * as ipcMain from './ipc-main'
 import * as ipcWebContents from './ipc-webcontents'
 import {
-  installNotificationCallback,
-  terminateDesktopNotifications,
+    installNotificationCallback,
+    terminateDesktopNotifications,
 } from './notifications'
 import { addTrustedIPCSender } from './trusted-ipc-sender'
 import { getUpdaterGUID } from '../lib/get-updater-guid'
@@ -79,6 +79,7 @@ export class AppWindow {
       windowOptions.frame = false
     } else if (__LINUX__) {
       windowOptions.icon = path.join(__dirname, 'static', 'icon-logo.png')
+      windowOptions.autoHideMenuBar = true
     }
 
     this.window = new BrowserWindow(windowOptions)

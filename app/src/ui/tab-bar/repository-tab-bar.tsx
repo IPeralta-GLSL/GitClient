@@ -3,6 +3,7 @@ import { Repository } from '../../models/repository'
 import { CloningRepository } from '../../models/cloning-repository'
 import { Octicon } from '../octicons'
 import * as octicons from '../octicons/octicons.generated'
+import { t } from '../../lib/i18n'
 
 interface IRepositoryTabProps {
   readonly repository: Repository | CloningRepository
@@ -63,6 +64,7 @@ interface IRepositoryTabBarProps {
   readonly onSelectTab: (repository: Repository | CloningRepository) => void
   readonly onCloseTab: (repository: Repository | CloningRepository) => void
   readonly onAddTab: () => void
+  readonly onSettingsClicked: () => void
 }
 
 export class RepositoryTabBar extends React.Component<IRepositoryTabBarProps> {
@@ -94,6 +96,14 @@ export class RepositoryTabBar extends React.Component<IRepositoryTabBarProps> {
             <Octicon symbol={octicons.plus} />
           </button>
         </div>
+        <button
+          className="tab-settings"
+          onClick={this.props.onSettingsClicked}
+          aria-label={t('settings')}
+          title={t('settings')}
+        >
+          <Octicon symbol={octicons.gear} />
+        </button>
       </div>
     )
   }

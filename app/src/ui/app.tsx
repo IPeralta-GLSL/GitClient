@@ -2887,6 +2887,7 @@ export class App extends React.Component<IAppProps, IAppState> {
         onSelectTab={this.onSelectTab}
         onCloseTab={this.onCloseTab}
         onAddTab={this.onAddTab}
+        onSettingsClicked={this.onSettingsClicked}
       />
     )
   }
@@ -3337,6 +3338,10 @@ export class App extends React.Component<IAppProps, IAppState> {
         {this.renderFetchButton()}
       </Toolbar>
     )
+  }
+
+  private onSettingsClicked = () => {
+    this.props.dispatcher.showPopup({ type: PopupType.Preferences })
   }
 
   private renderStartTab() {
