@@ -1,4 +1,5 @@
 import { Menu, shell, app, BrowserWindow } from 'electron'
+import { t } from '../../lib/i18n'
 import { ensureItemIds } from './ensure-item-ids'
 import { MenuEvent } from './menu-event'
 import { truncateWithEllipsis } from '../../lib/truncate-with-ellipsis'
@@ -67,20 +68,20 @@ export function buildDefaultMenu({
       label: 'GitHub Desktop',
       submenu: [
         {
-          label: 'About GitHub Desktop',
+          label: t('menuAbout'),
           click: emit('show-about'),
           id: 'about',
         },
         separator,
         {
-          label: 'Settings…',
+          label: `${t('settings')}…`,
           id: 'preferences',
           accelerator: 'CmdOrCtrl+,',
           click: emit('show-preferences'),
         },
         separator,
         {
-          label: 'Install Command Line Tool…',
+          label: t('menuInstallCLI'),
           id: 'install-cli',
           click: emit('install-darwin-cli'),
         },
@@ -100,23 +101,23 @@ export function buildDefaultMenu({
   }
 
   const fileMenu: Electron.MenuItemConstructorOptions = {
-    label: __DARWIN__ ? 'File' : '&File',
+    label: __DARWIN__ ? t('menuFile') : `&${t('menuFile')}`,
     submenu: [
       {
-        label: __DARWIN__ ? 'New Repository…' : 'New &repository…',
+        label: `${t('newRepository')}…`,
         id: 'new-repository',
         click: emit('create-repository'),
         accelerator: 'CmdOrCtrl+N',
       },
       separator,
       {
-        label: __DARWIN__ ? 'Add Local Repository…' : 'Add &local repository…',
+        label: `${t('addLocalRepository')}…`,
         id: 'add-local-repository',
         accelerator: 'CmdOrCtrl+O',
         click: emit('add-local-repository'),
       },
       {
-        label: __DARWIN__ ? 'Clone Repository…' : 'Clo&ne repository…',
+        label: `${t('cloneRepository')}…`,
         id: 'clone-repository',
         accelerator: 'CmdOrCtrl+Shift+O',
         click: emit('clone-repository'),
@@ -131,7 +132,7 @@ export function buildDefaultMenu({
     fileItems.push(
       separator,
       {
-        label: '&Options…',
+        label: `${t('options')}…`,
         id: 'preferences',
         accelerator: 'CmdOrCtrl+,',
         click: emit('show-preferences'),
@@ -139,7 +140,7 @@ export function buildDefaultMenu({
       separator,
       {
         role: 'quit',
-        label: 'E&xit',
+        label: t('menuExit'),
         accelerator: exitAccelerator,
       }
     )
@@ -148,23 +149,23 @@ export function buildDefaultMenu({
   template.push(fileMenu)
 
   template.push({
-    label: __DARWIN__ ? 'Edit' : '&Edit',
+    label: __DARWIN__ ? t('menuEdit') : `&${t('menuEdit')}`,
     submenu: [
-      { role: 'undo', label: __DARWIN__ ? 'Undo' : '&Undo' },
-      { role: 'redo', label: __DARWIN__ ? 'Redo' : '&Redo' },
+      { role: 'undo', label: t('menuUndo') },
+      { role: 'redo', label: t('menuRedo') },
       separator,
-      { role: 'cut', label: __DARWIN__ ? 'Cut' : 'Cu&t' },
-      { role: 'copy', label: __DARWIN__ ? 'Copy' : '&Copy' },
-      { role: 'paste', label: __DARWIN__ ? 'Paste' : '&Paste' },
+      { role: 'cut', label: t('menuCut') },
+      { role: 'copy', label: t('menuCopy') },
+      { role: 'paste', label: t('menuPaste') },
       {
-        label: __DARWIN__ ? 'Select All' : 'Select &all',
+        label: t('menuSelectAll'),
         accelerator: 'CmdOrCtrl+A',
         click: emit('select-all'),
       },
       separator,
       {
         id: 'find',
-        label: __DARWIN__ ? 'Find' : '&Find',
+        label: t('menuFind'),
         accelerator: 'CmdOrCtrl+F',
         click: emit('find-text'),
       },
@@ -172,35 +173,35 @@ export function buildDefaultMenu({
   })
 
   template.push({
-    label: __DARWIN__ ? 'View' : '&View',
+    label: __DARWIN__ ? t('menuView') : `&${t('menuView')}`,
     submenu: [
       {
-        label: __DARWIN__ ? 'Show Changes' : '&Changes',
+        label: t('menuShowChanges'),
         id: 'show-changes',
         accelerator: 'CmdOrCtrl+1',
         click: emit('show-changes'),
       },
       {
-        label: __DARWIN__ ? 'Show History' : '&History',
+        label: t('menuShowHistory'),
         id: 'show-history',
         accelerator: 'CmdOrCtrl+2',
         click: emit('show-history'),
       },
       {
-        label: __DARWIN__ ? 'Show Repository List' : 'Repository &list',
+        label: t('menuShowRepoList'),
         id: 'show-repository-list',
         accelerator: 'CmdOrCtrl+T',
         click: emit('choose-repository'),
       },
       {
-        label: __DARWIN__ ? 'Show Branches List' : '&Branches list',
+        label: t('menuShowBranchesList'),
         id: 'show-branches-list',
         accelerator: 'CmdOrCtrl+B',
         click: emit('show-branches'),
       },
       separator,
       {
-        label: __DARWIN__ ? 'Go to Summary' : 'Go to &Summary',
+        label: t('menuGoToSummary'),
         id: 'go-to-commit-message',
         accelerator: 'CmdOrCtrl+G',
         click: emit('go-to-commit-message'),
@@ -224,22 +225,22 @@ export function buildDefaultMenu({
         click: emit('toggle-changes-filter'),
       },
       {
-        label: __DARWIN__ ? 'Toggle Full Screen' : 'Toggle &full screen',
+        label: t('menuToggleFullScreen'),
         role: 'togglefullscreen',
       },
       separator,
       {
-        label: __DARWIN__ ? 'Reset Zoom' : 'Reset zoom',
+        label: t('menuResetZoom'),
         accelerator: 'CmdOrCtrl+0',
         click: zoom(ZoomDirection.Reset),
       },
       {
-        label: __DARWIN__ ? 'Zoom In' : 'Zoom in',
+        label: t('menuZoomIn'),
         accelerator: 'CmdOrCtrl+=',
         click: zoom(ZoomDirection.In),
       },
       {
-        label: __DARWIN__ ? 'Zoom Out' : 'Zoom out',
+        label: t('menuZoomOut'),
         accelerator: 'CmdOrCtrl+-',
         click: zoom(ZoomDirection.Out),
       },
@@ -300,7 +301,7 @@ export function buildDefaultMenu({
   const pushEventType = isForcePushForCurrentRepository ? 'force-push' : 'push'
 
   template.push({
-    label: __DARWIN__ ? 'Repository' : '&Repository',
+    label: __DARWIN__ ? t('menuRepository') : `&${t('menuRepository')}`,
     id: 'repository',
     submenu: [
       {
@@ -311,13 +312,13 @@ export function buildDefaultMenu({
       },
       {
         id: 'pull',
-        label: __DARWIN__ ? 'Pull' : 'Pu&ll',
+        label: t('pull'),
         accelerator: 'CmdOrCtrl+Shift+P',
         click: emit('pull'),
       },
       {
         id: 'fetch',
-        label: __DARWIN__ ? 'Fetch' : '&Fetch',
+        label: t('fetch'),
         accelerator: 'CmdOrCtrl+Shift+T',
         click: emit('fetch'),
       },
@@ -330,7 +331,7 @@ export function buildDefaultMenu({
       separator,
       {
         id: 'view-repository-on-github',
-        label: __DARWIN__ ? 'View on GitHub' : '&View on GitHub',
+        label: t('menuViewOnGitHub'),
         accelerator: 'CmdOrCtrl+Shift+G',
         click: emit('view-repository-on-github'),
       },
@@ -377,7 +378,7 @@ export function buildDefaultMenu({
       },
       separator,
       {
-        label: __DARWIN__ ? 'Repository Settings…' : 'Repository &settings…',
+        label: t('menuRepositorySettings'),
         id: 'show-repository-settings',
         click: emit('show-repository-settings'),
       },
@@ -386,19 +387,19 @@ export function buildDefaultMenu({
 
   const branchSubmenu = [
     {
-      label: __DARWIN__ ? 'New Branch…' : 'New &branch…',
+      label: t('menuNewBranch'),
       id: 'create-branch',
       accelerator: 'CmdOrCtrl+Shift+N',
       click: emit('create-branch'),
     },
     {
-      label: __DARWIN__ ? 'Rename…' : '&Rename…',
+      label: t('menuRename'),
       id: 'rename-branch',
       accelerator: 'CmdOrCtrl+Shift+R',
       click: emit('rename-branch'),
     },
     {
-      label: __DARWIN__ ? 'Delete…' : '&Delete…',
+      label: t('menuDelete'),
       id: 'delete-branch',
       accelerator: 'CmdOrCtrl+Shift+D',
       click: emit('delete-branch'),
@@ -471,7 +472,7 @@ export function buildDefaultMenu({
   ]
 
   branchSubmenu.push({
-    label: __DARWIN__ ? 'Preview Pull Request' : 'Preview pull request',
+    label: t('previewPullRequest'),
     id: 'preview-pull-request',
     accelerator: 'CmdOrCtrl+Alt+P',
     click: emit('preview-pull-request'),
@@ -485,7 +486,7 @@ export function buildDefaultMenu({
   })
 
   template.push({
-    label: __DARWIN__ ? 'Branch' : '&Branch',
+    label: __DARWIN__ ? t('menuBranch') : `&${t('menuBranch')}`,
     id: 'branch',
     submenu: branchSubmenu,
   })
@@ -504,7 +505,7 @@ export function buildDefaultMenu({
   }
 
   const submitIssueItem: Electron.MenuItemConstructorOptions = {
-    label: __DARWIN__ ? 'Report Issue…' : 'Report issue…',
+    label: t('menuReportIssue'),
     click() {
       shell
         .openExternal('https://github.com/desktop/desktop/issues/new/choose')
@@ -513,7 +514,7 @@ export function buildDefaultMenu({
   }
 
   const contactSupportItem: Electron.MenuItemConstructorOptions = {
-    label: __DARWIN__ ? 'Contact GitHub Support…' : '&Contact GitHub support…',
+    label: t('menuContactSupport'),
     click() {
       shell
         .openExternal(
@@ -524,7 +525,7 @@ export function buildDefaultMenu({
   }
 
   const showUserGuides: Electron.MenuItemConstructorOptions = {
-    label: 'Show User Guides',
+    label: t('menuShowUserGuides'),
     click() {
       shell
         .openExternal('https://docs.github.com/en/desktop')
@@ -533,7 +534,7 @@ export function buildDefaultMenu({
   }
 
   const showKeyboardShortcuts: Electron.MenuItemConstructorOptions = {
-    label: __DARWIN__ ? 'Show Keyboard Shortcuts' : 'Show keyboard shortcuts',
+    label: t('menuShowKeyboardShortcuts'),
     click() {
       shell
         .openExternal(
@@ -576,12 +577,12 @@ export function buildDefaultMenu({
     })
   } else {
     template.push({
-      label: '&Help',
+      label: `&${t('menuHelp')}`,
       submenu: [
         ...helpItems,
         separator,
         {
-          label: '&About GitHub Desktop',
+          label: t('menuAbout'),
           click: emit('show-about'),
           id: 'about',
         },

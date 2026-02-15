@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { t } from '../../lib/i18n'
 
 import { encodePathAsUrl } from '../../lib/path'
 import { Repository } from '../../models/repository'
@@ -14,8 +15,8 @@ import { Ref } from '../lib/ref'
 import { IAheadBehind } from '../../models/branch'
 import { IRemote } from '../../models/remote'
 import {
-  ForcePushBranchState,
-  getCurrentBranchForcePushState,
+    ForcePushBranchState,
+    getCurrentBranchForcePushState,
 } from '../../lib/rebase'
 import { StashedChangesLoadStates } from '../../models/stash-entry'
 import { Dispatcher } from '../dispatcher'
@@ -23,12 +24,12 @@ import { SuggestedActionGroup } from '../suggested-actions'
 import { PreferencesTab } from '../../models/preferences'
 import { PopupType } from '../../models/popup'
 import {
-  DropdownSuggestedAction,
-  IDropdownSuggestedActionOption,
+    DropdownSuggestedAction,
+    IDropdownSuggestedActionOption,
 } from '../suggested-actions/dropdown-suggested-action'
 import {
-  PullRequestSuggestedNextAction,
-  isIdPullRequestSuggestedNextAction,
+    PullRequestSuggestedNextAction,
+    isIdPullRequestSuggestedNextAction,
 } from '../../models/pull-request'
 import { KeyboardShortcut } from '../keyboard-shortcut/keyboard-shortcut'
 
@@ -438,7 +439,7 @@ export class NoChanges extends React.Component<
         menuItemId={itemId}
         description={description}
         discoverabilityContent={discoverabilityContent}
-        buttonText="View stash"
+        buttonText={t('viewStash')}
         type="primary"
         disabled={menuItem !== null && !menuItem.enabled}
         onClick={this.onViewStashClicked}
@@ -475,7 +476,7 @@ export class NoChanges extends React.Component<
         title="Publish your repository to GitHub"
         description="This repository is currently only available on your local machine. By publishing it on GitHub you can share it, and collaborate with others."
         discoverabilityContent={discoverabilityContent}
-        buttonText="Publish repository"
+        buttonText={t('publishRepo')}
         menuItemId={itemId}
         type="primary"
         disabled={!menuItem.enabled}
@@ -525,7 +526,7 @@ export class NoChanges extends React.Component<
         menuItemId={itemId}
         description={description}
         discoverabilityContent={discoverabilityContent}
-        buttonText="Publish branch"
+        buttonText={t('publishBranch')}
         type="primary"
         disabled={!menuItem.enabled}
         onClick={this.onPublishBranchClicked}
@@ -766,7 +767,7 @@ export class NoChanges extends React.Component<
         <div className="content">
           <div className="interstitial-header">
             <div className="text">
-              <h1>No local changes</h1>
+              <h1>{t('noLocalChanges')}</h1>
               <p>
                 There are no uncommitted changes in this repository. Here are
                 some friendly suggestions for what to do next.

@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { t } from '../lib/i18n'
 import { Repository } from '../models/repository'
 import { Commit, CommitOneLine } from '../models/commit'
 import { TipState } from '../models/tip'
@@ -11,11 +12,11 @@ import { SelectedCommits, CompareSidebar } from './history'
 import { Resizable } from './resizable'
 import { TabBar } from './tab-bar'
 import {
-  IRepositoryState,
-  RepositorySectionTab,
-  ChangesSelectionKind,
-  IConstrainedValue,
-  CommitOptions,
+    IRepositoryState,
+    RepositorySectionTab,
+    ChangesSelectionKind,
+    IConstrainedValue,
+    CommitOptions,
 } from '../lib/app-state'
 import { Dispatcher } from './dispatcher'
 import { IssuesStore, GitHubUserStore } from '../lib/stores'
@@ -215,12 +216,12 @@ export class RepositoryView extends React.Component<
     return (
       <TabBar selectedIndex={selectedTab} onTabClicked={this.onTabClicked}>
         <span className="with-indicator" id="changes-tab">
-          <span>Changes</span>
+          <span>{t('changes')}</span>
           {this.renderChangesBadge()}
         </span>
 
         <div className="with-indicator" id="history-tab">
-          <span>History</span>
+          <span>{t('history')}</span>
         </div>
       </TabBar>
     )

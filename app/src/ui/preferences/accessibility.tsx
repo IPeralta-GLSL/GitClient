@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { t } from '../../lib/i18n'
 import { DialogContent } from '../dialog'
 import { Checkbox, CheckboxValue } from '../lib/checkbox'
 
@@ -22,9 +23,9 @@ export class Accessibility extends React.Component<
     return (
       <DialogContent>
         <div className="advanced-section">
-          <h2>Accessibility</h2>
+          <h2>{t('accessibility')}</h2>
           <Checkbox
-            label="Underline links"
+            label={t('underlineLinks')}
             value={
               this.props.underlineLinks ? CheckboxValue.On : CheckboxValue.Off
             }
@@ -41,7 +42,7 @@ export class Accessibility extends React.Component<
           </p>
 
           <Checkbox
-            label="Show check marks in the diff"
+            label={t('showCheckMarks')}
             value={
               this.props.showDiffCheckMarks
                 ? CheckboxValue.On

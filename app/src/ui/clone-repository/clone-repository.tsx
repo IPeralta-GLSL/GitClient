@@ -1,17 +1,18 @@
 import * as Path from 'path'
 import * as React from 'react'
+import { t } from '../../lib/i18n'
 import { Dispatcher } from '../dispatcher'
 import { getDefaultDir, setDefaultDir } from '../lib/default-dir'
 import {
-  Account,
-  isDotComAccount,
-  isEnterpriseAccount,
+    Account,
+    isDotComAccount,
+    isEnterpriseAccount,
 } from '../../models/account'
 import { FoldoutType } from '../../lib/app-state'
 import {
-  IRepositoryIdentifier,
-  parseRepositoryIdentifier,
-  parseRemote,
+    IRepositoryIdentifier,
+    parseRepositoryIdentifier,
+    parseRemote,
 } from '../../lib/remote-parsing'
 import { findAccountForRemoteURL } from '../../lib/find-account'
 import { API, IAPIRepository, IAPIRepositoryCloneInfo } from '../../lib/api'
@@ -264,7 +265,7 @@ export class CloneRepository extends React.Component<
     return (
       <Dialog
         className="clone-repository"
-        title={__DARWIN__ ? 'Clone a Repository' : 'Clone a repository'}
+        title={t('cloneRepository')}
         onSubmit={this.clone}
         onDismissed={this.props.onDismissed}
         loading={this.state.loading}
@@ -273,9 +274,9 @@ export class CloneRepository extends React.Component<
           onTabClicked={this.onTabClicked}
           selectedIndex={this.props.selectedTab}
         >
-          <span id="dotcom-tab">GitHub.com</span>
-          <span id="enterprise-tab">GitHub Enterprise</span>
-          <span id="url-tab">URL</span>
+          <span id="dotcom-tab">{t('githubCom')}</span>
+          <span id="enterprise-tab">{t('githubEnterprise')}</span>
+          <span id="url-tab">{t('url')}</span>
         </TabBar>
 
         {error ? <DialogError>{error.message}</DialogError> : null}
@@ -325,7 +326,7 @@ export class CloneRepository extends React.Component<
 
     return (
       <DialogFooter>
-        <OkCancelButtonGroup okButtonText="Clone" okButtonDisabled={disabled} />
+        <OkCancelButtonGroup okButtonText={t('clone')} okButtonDisabled={disabled} />
       </DialogFooter>
     )
   }

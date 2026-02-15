@@ -1,15 +1,16 @@
 import * as React from 'react'
+import { t } from '../../lib/i18n'
 import { DialogContent } from '../dialog'
 import { Checkbox, CheckboxValue } from '../lib/checkbox'
 import { LinkButton } from '../lib/link-button'
 import {
-  getNotificationSettingsUrl,
-  supportsNotifications,
-  supportsNotificationsPermissionRequest,
+    getNotificationSettingsUrl,
+    supportsNotifications,
+    supportsNotificationsPermissionRequest,
 } from 'desktop-notifications'
 import {
-  getNotificationsPermission,
-  requestNotificationsPermission,
+    getNotificationsPermission,
+    requestNotificationsPermission,
 } from '../main-process-proxy'
 
 interface INotificationPreferencesProps {
@@ -51,9 +52,9 @@ export class Notifications extends React.Component<
     return (
       <DialogContent>
         <div className="advanced-section">
-          <h2>Notifications</h2>
+          <h2>{t('notifications')}</h2>
           <Checkbox
-            label="Enable notifications"
+            label={t('enableNotifications')}
             value={
               this.props.notificationsEnabled
                 ? CheckboxValue.On

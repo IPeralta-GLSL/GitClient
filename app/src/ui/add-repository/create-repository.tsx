@@ -1,14 +1,15 @@
 import * as React from 'react'
 import * as Path from 'path'
+import { t } from '../../lib/i18n'
 
 import { Dispatcher } from '../dispatcher'
 import {
-  initGitRepository,
-  createCommit,
-  getStatus,
-  getAuthorIdentity,
-  getRepositoryType,
-  RepositoryType,
+    initGitRepository,
+    createCommit,
+    getStatus,
+    getAuthorIdentity,
+    getRepositoryType,
+    RepositoryType,
 } from '../../lib/git'
 import { TextBox } from '../lib/text-box'
 import { Button } from '../lib/button'
@@ -695,9 +696,7 @@ export class CreateRepository extends React.Component<
     return (
       <Dialog
         id="create-repository"
-        title={
-          __DARWIN__ ? 'Create a New Repository' : 'Create a new repository'
-        }
+        title={t('createRepository')}
         loading={this.state.creating}
         onSubmit={this.createRepository}
         onDismissed={this.props.onDismissed}
@@ -708,7 +707,7 @@ export class CreateRepository extends React.Component<
           <Row>
             <TextBox
               value={this.state.name}
-              label="Name"
+              label={t('name')}
               placeholder="repository name"
               onValueChanged={this.onNameChanged}
               ariaDescribedBy="existing-repository-path-error repo-sanitized-name-warning"
@@ -720,7 +719,7 @@ export class CreateRepository extends React.Component<
           <Row>
             <TextBox
               value={this.state.description}
-              label="Description"
+              label={t('description')}
               onValueChanged={this.onDescriptionChanged}
             />
           </Row>
@@ -728,14 +727,14 @@ export class CreateRepository extends React.Component<
           <Row>
             <TextBox
               value={this.state.path ?? ''}
-              label={__DARWIN__ ? 'Local Path' : 'Local path'}
+              label={t('localPath')}
               placeholder="repository path"
               onValueChanged={this.onPathChanged}
               disabled={loadingDefaultDir}
               ariaDescribedBy="existing-repository-path-error path-is-subfolder-of-repository"
             />
             <Button onClick={this.showFilePicker} disabled={loadingDefaultDir}>
-              Choose…
+              {t('choose')}
             </Button>
           </Row>
 
@@ -744,7 +743,7 @@ export class CreateRepository extends React.Component<
 
           <Row>
             <Checkbox
-              label="Initialize this repository with a README"
+              label={t('initializeReadme')}
               value={
                 this.state.createWithReadme
                   ? CheckboxValue.On
@@ -763,9 +762,7 @@ export class CreateRepository extends React.Component<
         <DialogFooter>
           {this.renderPathMessage()}
           <OkCancelButtonGroup
-            okButtonText={
-              __DARWIN__ ? 'Create Repository' : 'Create repository'
-            }
+            okButtonText={t('createRepository')}
             okButtonDisabled={disabled || loadingDefaultDir}
             okButtonAriaDescribedBy="create-repo-path-msg"
           />

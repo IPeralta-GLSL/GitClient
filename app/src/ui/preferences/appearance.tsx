@@ -1,8 +1,9 @@
 import * as React from 'react'
+import { t } from '../../lib/i18n'
 import {
-  ApplicationTheme,
-  supportsSystemThemeChanges,
-  getCurrentlyAppliedTheme,
+    ApplicationTheme,
+    supportsSystemThemeChanges,
+    getCurrentlyAppliedTheme,
 } from '../lib/application-theme'
 import { Row } from '../lib/row'
 import { DialogContent } from '../dialog'
@@ -87,14 +88,14 @@ export class Appearance extends React.Component<
         return (
           <span>
             <img src={lightThemeImage} alt="" />
-            <span className="theme-value-label">Light</span>
+            <span className="theme-value-label">{t('light')}</span>
           </span>
         )
       case ApplicationTheme.Dark:
         return (
           <span>
             <img src={darkThemeImage} alt="" />
-            <span className="theme-value-label">Dark</span>
+            <span className="theme-value-label">{t('dark')}</span>
           </span>
         )
       case ApplicationTheme.System:
@@ -109,7 +110,7 @@ export class Appearance extends React.Component<
               <img src={lightThemeImage} alt="" />
               <img src={darkThemeImage} alt="" />
             </span>
-            <span className="theme-value-label">System</span>
+            <span className="theme-value-label">{t('systemTheme')}</span>
           </span>
         )
     }
@@ -130,7 +131,7 @@ export class Appearance extends React.Component<
 
     return (
       <div className="appearance-section">
-        <h2 id="theme-heading">Theme</h2>
+        <h2 id="theme-heading">{t('theme')}</h2>
 
         <RadioGroup<ApplicationTheme>
           ariaLabelledBy="theme-heading"
@@ -149,11 +150,11 @@ export class Appearance extends React.Component<
 
     return (
       <div className="appearance-section">
-        <h2 id="diff-heading">{'Diff'}</h2>
+        <h2 id="diff-heading">{t('diff')}</h2>
 
         <Select
           value={this.state.selectedTabSize.toString()}
-          label={__DARWIN__ ? 'Tab Size' : 'Tab size'}
+          label={t('tabSize')}
           onChange={this.onSelectedTabSizeChanged}
         >
           {availableTabSizes.map(n => (

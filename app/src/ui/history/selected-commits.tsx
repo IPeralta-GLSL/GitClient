@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { t } from '../../lib/i18n'
 import { clipboard } from 'electron'
 import * as Path from 'path'
 
@@ -12,12 +13,12 @@ import { revealInFileManager } from '../../lib/app-shell'
 
 import { openFile } from '../lib/open-file'
 import {
-  isSafeFileExtension,
-  CopyFilePathLabel,
-  DefaultEditorLabel,
-  RevealInFileManagerLabel,
-  OpenWithDefaultProgramLabel,
-  CopyRelativeFilePathLabel,
+    isSafeFileExtension,
+    CopyFilePathLabel,
+    DefaultEditorLabel,
+    RevealInFileManagerLabel,
+    OpenWithDefaultProgramLabel,
+    CopyRelativeFilePathLabel,
 } from '../lib/context-menu'
 import { ThrottledScheduler } from '../lib/throttled-scheduler'
 
@@ -146,7 +147,7 @@ export class SelectedCommits extends React.Component<
     if (file == null) {
       // don't show both 'empty' messages
       const message =
-        this.props.changesetData.files.length === 0 ? '' : 'No file selected'
+        this.props.changesetData.files.length === 0 ? '' : t('noFileSelected')
 
       return (
         <div className="panel blankslate" id="diff">

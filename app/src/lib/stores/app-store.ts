@@ -7163,6 +7163,7 @@ export class AppStore extends TypedBaseStore<IAppState> {
   public _setSelectedLocale(locale: AppLocale) {
     setLocale(locale)
     this.selectedLocale = locale
+    ipcRenderer.send('set-locale', locale)
     this.emitUpdate()
 
     return Promise.resolve()

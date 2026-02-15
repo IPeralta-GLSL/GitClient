@@ -1,8 +1,9 @@
 import * as React from 'react'
+import { t } from '../../lib/i18n'
 import {
-  Account,
-  isDotComAccount,
-  isEnterpriseAccount,
+    Account,
+    isDotComAccount,
+    isEnterpriseAccount,
 } from '../../models/account'
 import { IAvatarUser } from '../../models/avatar'
 import { lookupPreferredEmail } from '../../lib/email'
@@ -34,12 +35,12 @@ export class Accounts extends React.Component<IAccountsProps, {}> {
 
     return (
       <DialogContent className="accounts-tab">
-        <h2>GitHub.com</h2>
+        <h2>{t('githubCom')}</h2>
         {dotComAccount
           ? this.renderAccount(dotComAccount, SignInType.DotCom)
           : this.renderSignIn(SignInType.DotCom)}
 
-        <h2>GitHub Enterprise</h2>
+        <h2>{t('githubEnterprise')}</h2>
         {this.renderMultipleEnterpriseAccounts()}
       </DialogContent>
     )
@@ -100,7 +101,7 @@ export class Accounts extends React.Component<IAccountsProps, {}> {
           </div>
         </div>
         <Button onClick={this.logout(account)} className={className}>
-          {__DARWIN__ ? 'Sign Out' : 'Sign out'}
+          {t('signOut')}
         </Button>
       </Row>
     )
@@ -115,7 +116,7 @@ export class Accounts extends React.Component<IAccountsProps, {}> {
   }
 
   private renderSignIn(type: SignInType) {
-    const signInTitle = __DARWIN__ ? 'Sign Into' : 'Sign into'
+    const signInTitle = t('signIn')
     switch (type) {
       case SignInType.DotCom: {
         return (

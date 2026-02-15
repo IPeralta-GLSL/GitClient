@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { t } from '../../lib/i18n'
 import { TextBox } from '../lib/text-box'
 import { Button } from '../lib/button'
 import { Row } from '../lib/row'
@@ -52,11 +53,11 @@ export class CloneGenericRepository extends React.Component<
         <Row>
           <TextBox
             value={this.props.path}
-            label={__DARWIN__ ? 'Local Path' : 'Local path'}
+            label={t('localPath')}
             placeholder="repository path"
             onValueChanged={this.props.onPathChanged}
           />
-          <Button onClick={this.props.onChooseDirectory}>Choose…</Button>
+          <Button onClick={this.props.onChooseDirectory}>{t('choose')}</Button>
         </Row>
       </DialogContent>
     )

@@ -1,19 +1,20 @@
 import * as React from 'react'
+import { t } from '../../lib/i18n'
 import { Dispatcher } from '../dispatcher'
 import * as octicons from '../octicons/octicons.generated'
 import { OcticonSymbol, syncClockwise } from '../octicons'
 import {
-  isRepositoryWithGitHubRepository,
-  Repository,
+    isRepositoryWithGitHubRepository,
+    Repository,
 } from '../../models/repository'
 import { Resizable } from '../resizable'
 import { TipState } from '../../models/tip'
 import { ToolbarDropdown, DropdownState } from './dropdown'
 import {
-  FoldoutType,
-  IConstrainedValue,
-  IRepositoryState,
-  isRebaseConflictState,
+    FoldoutType,
+    IConstrainedValue,
+    IRepositoryState,
+    isRebaseConflictState,
 } from '../../lib/app-state'
 import { BranchesContainer, PullRequestBadge } from '../branches'
 import { assertNever } from '../../lib/fatal-error'
@@ -138,7 +139,7 @@ export class BranchDropdown extends React.Component<IBranchDropdownProps> {
     let icon: OcticonSymbol = octicons.gitBranch
     let iconClassName: string | undefined = undefined
     let title: string
-    let description = __DARWIN__ ? 'Current Branch' : 'Current branch'
+    let description = t('currentBranch')
     let canOpen = true
     let disabled = false
     let tooltip: string
@@ -158,9 +159,9 @@ export class BranchDropdown extends React.Component<IBranchDropdownProps> {
       )
     } else if (tip.kind === TipState.Detached) {
       title = `On ${tip.currentSha.substring(0, 7)}`
-      tooltip = 'Currently on a detached HEAD'
+      tooltip = t('currentlyOnDetachedHead')
       icon = octicons.gitCommit
-      description = 'Detached HEAD'
+      description = t('detachedHead')
     } else if (tip.kind === TipState.Valid) {
       title = tooltip = tip.branch.name
     } else {
@@ -178,14 +179,14 @@ export class BranchDropdown extends React.Component<IBranchDropdownProps> {
         description = `${description} (${friendlyProgress}%)`
       }
 
-      tooltip = `Checking out ${checkoutProgress.target}`
+      tooltip = `${t('checkingOut')} ${checkoutProgress.target}`
       progressValue = checkoutProgress.value
       icon = syncClockwise
       iconClassName = 'spin'
       canOpen = false
     } else if (conflictState !== null && isRebaseConflictState(conflictState)) {
       title = conflictState.targetBranch
-      description = 'Rebasing branch'
+      description = t('rebasingBranch')
       icon = octicons.gitBranch
       canOpen = false
       disabled = true

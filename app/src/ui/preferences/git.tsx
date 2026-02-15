@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { t } from '../../lib/i18n'
 import { DialogContent } from '../dialog'
 import { RefNameTextBox } from '../lib/ref-name-text-box'
 import { Ref } from '../lib/ref'
@@ -9,8 +10,8 @@ import { TabBar } from '../tab-bar'
 import { Checkbox, CheckboxValue } from '../lib/checkbox'
 import { Select } from '../lib/select'
 import {
-  shellFriendlyNames,
-  SupportedHooksEnvShell,
+    shellFriendlyNames,
+    SupportedHooksEnvShell,
 } from '../../lib/hooks/config'
 
 interface IGitProps {
@@ -150,9 +151,9 @@ export class Git extends React.Component<IGitProps> {
           onTabClicked={this.onTabClicked}
         >
           <span>Author</span>
-          <span>Default branch</span>
+          <span>{t('defaultBranchName')}</span>
           <span>
-            Hooks <span className="beta-pill">Beta</span>
+            {t('hooks')} <span className="beta-pill">{t('beta')}</span>
           </span>
         </TabBar>
         <div className="git-preferences-content">{this.renderCurrentTab()}</div>
@@ -192,7 +193,7 @@ export class Git extends React.Component<IGitProps> {
     return (
       <div className="default-branch-component">
         <h2 id="default-branch-heading">
-          Default branch name for new repositories
+          {t('defaultBranchName')}
         </h2>
 
         <RefNameTextBox

@@ -1,15 +1,16 @@
 import * as React from 'react'
+import { t } from '../../lib/i18n'
 import classNames from 'classnames'
 import {
-  AutocompletingTextArea,
-  AutocompletingInput,
-  IAutocompletionProvider,
-  CoAuthorAutocompletionProvider,
+    AutocompletingTextArea,
+    AutocompletingInput,
+    IAutocompletionProvider,
+    CoAuthorAutocompletionProvider,
 } from '../autocompletion'
 import { CommitIdentity } from '../../models/commit-identity'
 import {
-  DefaultCommitMessage,
-  ICommitMessage,
+    DefaultCommitMessage,
+    ICommitMessage,
 } from '../../models/commit-message'
 import { Repository } from '../../models/repository'
 import { Button } from '../lib/button'
@@ -29,13 +30,13 @@ import { IAvatarUser, getAvatarUserFromAuthor } from '../../models/avatar'
 import { showContextualMenu } from '../../lib/menu-item'
 import { Account, isEnterpriseAccount } from '../../models/account'
 import {
-  CommitMessageAvatar,
-  CommitMessageAvatarWarningType,
+    CommitMessageAvatar,
+    CommitMessageAvatarWarningType,
 } from './commit-message-avatar'
 import {
-  getStealthEmailForUser,
-  isAttributableEmailFor,
-  lookupPreferredEmail,
+    getStealthEmailForUser,
+    isAttributableEmailFor,
+    lookupPreferredEmail,
 } from '../../lib/email'
 import { setGlobalConfigValue } from '../../lib/git/config'
 import { Popup, PopupType } from '../../models/popup'
@@ -46,15 +47,15 @@ import { TooltipDirection } from '../lib/tooltip'
 import { ToggledtippedContent } from '../lib/toggletipped-content'
 import { PreferencesTab } from '../../models/preferences'
 import {
-  RepoRuleEnforced,
-  RepoRulesInfo,
-  RepoRulesMetadataFailures,
+    RepoRuleEnforced,
+    RepoRulesInfo,
+    RepoRulesMetadataFailures,
 } from '../../models/repo-rules'
 import { IAheadBehind } from '../../models/branch'
 import {
-  Popover,
-  PopoverAnchorPosition,
-  PopoverDecoration,
+    Popover,
+    PopoverAnchorPosition,
+    PopoverDecoration,
 } from '../lib/popover'
 import { RepoRulesetsForBranchLink } from '../repository-rules/repo-rulesets-for-branch-link'
 import { RepoRulesMetadataFailureList } from '../repository-rules/repo-rules-failure-list'
@@ -63,8 +64,8 @@ import { useRepoRulesLogic } from '../../lib/helpers/repo-rules'
 import { isDotCom } from '../../lib/endpoint-capabilities'
 import { WorkingDirectoryFileChange } from '../../models/status'
 import {
-  enableCommitMessageGeneration,
-  enableHooksEnvironment,
+    enableCommitMessageGeneration,
+    enableHooksEnvironment,
 } from '../../lib/feature-flag'
 import { AriaLiveContainer } from '../accessibility/aria-live-container'
 import { HookProgress } from '../../lib/git'
@@ -1188,9 +1189,9 @@ export class CommitMessage extends React.Component<
         <CommitWarning icon={CommitWarningIcon.Information}>
           Your changes will modify your <strong>most recent commit</strong>.{' '}
           <LinkButton onClick={this.props.onStopAmending}>
-            Stop amending
+            {t('stopAmending')}
           </LinkButton>{' '}
-          to make these changes as a new commit.
+          {t('makeNewCommit')}
         </CommitWarning>
       )
     } else {
@@ -1428,8 +1429,8 @@ export class CommitMessage extends React.Component<
   private getButtonVerb() {
     const { isCommitting, commitToAmend } = this.props
 
-    const amendVerb = isCommitting ? 'Amending' : 'Amend'
-    const commitVerb = isCommitting ? 'Committing' : 'Commit'
+    const amendVerb = isCommitting ? t('amending') : t('amend')
+    const commitVerb = isCommitting ? t('committing') : t('commit')
     const isAmending = commitToAmend !== null
 
     return isAmending ? amendVerb : commitVerb
@@ -1448,7 +1449,7 @@ export class CommitMessage extends React.Component<
      * as three separate strings "Verb" and "Count" and "to" and even tho
      * visually it was correctly adding spacings, for screen reader users it was
      * not and putting them all to together as one word. */
-    const action = `${verb} ${this.getFilesToBeCommittedButtonText()}to `
+    const action = `${verb} ${this.getFilesToBeCommittedButtonText()}${t('commitTo')} `
 
     return (
       <>
@@ -1468,7 +1469,7 @@ export class CommitMessage extends React.Component<
       return ''
     }
 
-    const pluralizedFile = filesToBeCommittedCount > 1 ? 'files' : 'file'
+    const pluralizedFile = filesToBeCommittedCount > 1 ? t('files') : t('file')
 
     return `${filesToBeCommittedCount} ${pluralizedFile} `
   }
@@ -1481,7 +1482,7 @@ export class CommitMessage extends React.Component<
       return verb
     }
 
-    return `${verb} to ${branch}`
+    return `${verb} ${t('commitTo')} ${branch}`
   }
 
   private getButtonText() {
@@ -1504,7 +1505,7 @@ export class CommitMessage extends React.Component<
 
     const isAmending = commitToAmend !== null
     return isAmending
-      ? `${this.getButtonVerb()} last commit`
+      ? `${this.getButtonVerb()} ${t('lastCommit')}`
       : this.getCommittingButtonTitle()
   }
 
@@ -1519,7 +1520,7 @@ export class CommitMessage extends React.Component<
     } else if (!this.props.anyFilesSelected && this.props.anyFilesAvailable) {
       return `Select one or more files to commit`
     } else if (this.props.isCommitting) {
-      return `Committing changes…`
+      return `${t('committing')}…`
     }
 
     return undefined
@@ -1568,20 +1569,20 @@ export class CommitMessage extends React.Component<
         tooltip={
           <>
             <div className="title">
-              Great commit summaries contain fewer than 50 characters
+              {t('summaryLengthHint')}
             </div>
             <div className="description">
-              Place extra information in the description field.
+              {t('summaryLengthHintDesc')}
             </div>
           </>
         }
         ariaLiveMessage={
-          'Great commit summaries contain fewer than 50 characters. Place extra information in the description field.'
+          `${t('summaryLengthHint')}. ${t('summaryLengthHintDesc')}`
         }
         direction={TooltipDirection.NORTH}
         className="length-hint"
         tooltipClassName="length-hint-tooltip"
-        ariaLabel="Open Summary Length Info"
+        ariaLabel={t('summaryLengthHint')}
       >
         <Octicon symbol={octicons.lightBulb} />
       </ToggledtippedContent>
@@ -1650,7 +1651,7 @@ export class CommitMessage extends React.Component<
       <div className={cn}>
         <div className="description">{text}</div>
         {onShowCommitProgress && (
-          <Button tooltip="Show commit progress" onClick={onShowCommitProgress}>
+          <Button tooltip={t('showCommitProgress')} onClick={onShowCommitProgress}>
             <Octicon symbol={octicons.terminal} />
           </Button>
         )}
@@ -1699,7 +1700,7 @@ export class CommitMessage extends React.Component<
     return (
       <div
         role="group"
-        aria-label="Create commit"
+        aria-label={t('commitMessageInput')}
         className={className}
         onContextMenu={this.onContextMenu}
         ref={this.wrapperRef}
@@ -1709,8 +1710,8 @@ export class CommitMessage extends React.Component<
 
           <AutocompletingInput
             required={true}
-            label={this.props.showInputLabels === true ? 'Summary' : undefined}
-            screenReaderLabel="Commit summary"
+            label={this.props.showInputLabels === true ? t('summary') : undefined}
+            screenReaderLabel={t('commitMessageInput')}
             className={summaryInputClassName}
             placeholder={placeholder}
             value={this.state.commitMessage.summary}
@@ -1734,7 +1735,7 @@ export class CommitMessage extends React.Component<
         {this.state.isRuleFailurePopoverOpen && this.renderRuleFailurePopover()}
 
         {this.props.showInputLabels === true && (
-          <label htmlFor="commit-message-description">Description</label>
+          <label htmlFor="commit-message-description">{t('description')}</label>
         )}
         <FocusContainer
           className="description-focus-container"
@@ -1745,10 +1746,10 @@ export class CommitMessage extends React.Component<
             className={descriptionClassName}
             screenReaderLabel={
               this.props.showInputLabels !== true
-                ? 'Commit description'
+                ? t('descriptionInput')
                 : undefined
             }
-            placeholder="Description"
+            placeholder={t('description')}
             value={this.state.commitMessage.description || ''}
             onValueChanged={this.onDescriptionChanged}
             autocompletionProviders={

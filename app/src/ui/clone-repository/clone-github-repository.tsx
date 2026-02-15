@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { t } from '../../lib/i18n'
 
 import { Account } from '../../models/account'
 import { DialogContent } from '../dialog'
@@ -120,11 +121,11 @@ export class CloneGithubRepository extends React.PureComponent<ICloneGithubRepos
         <Row className="local-path-field">
           <TextBox
             value={this.props.path}
-            label={__DARWIN__ ? 'Local Path' : 'Local path'}
+            label={t('localPath')}
             placeholder="repository path"
             onValueChanged={this.props.onPathChanged}
           />
-          <Button onClick={this.props.onChooseDirectory}>Choose…</Button>
+          <Button onClick={this.props.onChooseDirectory}>{t('choose')}</Button>
         </Row>
       </DialogContent>
     )

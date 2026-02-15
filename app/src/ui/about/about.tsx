@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { t } from '../../lib/i18n'
 
 import { Row } from '../lib/row'
 import { Button } from '../lib/button'
@@ -107,7 +108,7 @@ export class About extends React.Component<IAboutProps> {
         return (
           <Row>
             <Button onClick={this.props.onQuitAndInstall}>
-              Quit and Install Update
+              {t('quitAndInstall')}
             </Button>
           </Row>
         )
@@ -121,7 +122,7 @@ export class About extends React.Component<IAboutProps> {
             UpdateStatus.UpdateNotAvailable,
           ].includes(updateStatus) || isOSNoLongerSupportedByElectron()
 
-        const buttonTitle = 'Check for Updates'
+        const buttonTitle = t('checkForUpdates')
 
         return (
           <Row>
@@ -149,8 +150,7 @@ export class About extends React.Component<IAboutProps> {
     if (!this.canCheckForUpdates) {
       return (
         <p>
-          The application is currently running in development and will not
-          receive any updates.
+          {t('devModeNoUpdates')}
         </p>
       )
     }
@@ -159,9 +159,9 @@ export class About extends React.Component<IAboutProps> {
 
     switch (status) {
       case UpdateStatus.CheckingForUpdates:
-        return <UpdateInfo message="Checking for updates…" loading={true} />
+        return <UpdateInfo message={t('checkingForUpdates')} loading={true} />
       case UpdateStatus.UpdateAvailable:
-        return <UpdateInfo message="Downloading update…" loading={true} />
+        return <UpdateInfo message={t('downloadingUpdate')} loading={true} />
       case UpdateStatus.UpdateNotAvailable:
         if (!lastSuccessfulCheck) {
           return null
@@ -187,7 +187,7 @@ export class About extends React.Component<IAboutProps> {
         )
       case UpdateStatus.UpdateReady:
         return (
-          <UpdateInfo message="An update has been downloaded and is ready to be installed." />
+          <UpdateInfo message={t('updateReady')} />
         )
       case UpdateStatus.UpdateNotChecked:
         return null
@@ -237,11 +237,11 @@ export class About extends React.Component<IAboutProps> {
 
     return (
       <div>
-        <p className="no-padding">Looking for the latest features?</p>
+        <p className="no-padding">{t('lookingForLatest')}</p>
         <p className="no-padding">
           Check out the{' '}
           <LinkButton uri="https://desktop.github.com/beta">
-            Beta Channel
+            {t('betaChannel')}
           </LinkButton>
         </p>
       </div>
@@ -252,10 +252,10 @@ export class About extends React.Component<IAboutProps> {
     const name = this.props.applicationName
     const version = this.props.applicationVersion
     const releaseNotesLink = (
-      <LinkButton uri={ReleaseNotesUri}>release notes</LinkButton>
+      <LinkButton uri={ReleaseNotesUri}>{t('releaseNotes')}</LinkButton>
     )
 
-    const versionText = __DEV__ ? `Build ${version}` : `Version ${version}`
+    const versionText = __DEV__ ? `${t('build')} ${version}` : `${t('version')} ${version}`
     const titleId = 'Dialog_about'
 
     return (
@@ -275,7 +275,7 @@ export class About extends React.Component<IAboutProps> {
               height="64"
             />
           </Row>
-          <h1 id={titleId}>About {name}</h1>
+          <h1 id={titleId}>{t('about')} {name}</h1>
           <p className="no-padding">
             <span className="selectable-text">
               {versionText} ({this.props.applicationArchitecture})
@@ -288,12 +288,12 @@ export class About extends React.Component<IAboutProps> {
           <div className="terms-and-license-container">
             <p className="no-padding terms-and-license">
               <LinkButton onClick={this.props.onShowTermsAndConditions}>
-                Terms and Conditions
+                {t('termsAndConditions')}
               </LinkButton>
             </p>
             <p className="no-padding terms-and-license">
               <LinkButton onClick={this.props.onShowAcknowledgements}>
-                License and Open Source Notices
+                {t('licenseAndNotices')}
               </LinkButton>
             </p>
             <p className="terms-and-license">

@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { t } from '../../lib/i18n'
 import { UncommittedChangesStrategy } from '../../models/uncommitted-changes-strategy'
 import { DialogContent } from '../dialog'
 import { Checkbox, CheckboxValue } from '../lib/checkbox'
@@ -222,11 +223,11 @@ export class Prompts extends React.Component<
       <DialogContent>
         <div className="advanced-section">
           <h2 id="show-confirm-dialog-heading">
-            Show a confirmation dialog before...
+            {t('confirmBefore')}
           </h2>
           <div role="group" aria-labelledby="show-confirm-dialog-heading">
             <Checkbox
-              label="Removing repositories"
+              label={t('removingRepositories')}
               value={
                 this.state.confirmRepositoryRemoval
                   ? CheckboxValue.On
@@ -235,7 +236,7 @@ export class Prompts extends React.Component<
               onChange={this.onConfirmRepositoryRemovalChanged}
             />
             <Checkbox
-              label="Discarding changes"
+              label={t('discardingChanges')}
               value={
                 this.state.confirmDiscardChanges
                   ? CheckboxValue.On
@@ -244,7 +245,7 @@ export class Prompts extends React.Component<
               onChange={this.onConfirmDiscardChangesChanged}
             />
             <Checkbox
-              label="Discarding changes permanently"
+              label={t('discardingChangesPermanently')}
               value={
                 this.state.confirmDiscardChangesPermanently
                   ? CheckboxValue.On
@@ -253,7 +254,7 @@ export class Prompts extends React.Component<
               onChange={this.onConfirmDiscardChangesPermanentlyChanged}
             />
             <Checkbox
-              label="Discarding stash"
+              label={t('discardingStash')}
               value={
                 this.state.confirmDiscardStash
                   ? CheckboxValue.On
@@ -262,7 +263,7 @@ export class Prompts extends React.Component<
               onChange={this.onConfirmDiscardStashChanged}
             />
             <Checkbox
-              label="Checking out a commit"
+              label={t('checkingOutCommit')}
               value={
                 this.state.confirmCheckoutCommit
                   ? CheckboxValue.On
@@ -271,7 +272,7 @@ export class Prompts extends React.Component<
               onChange={this.onConfirmCheckoutCommitChanged}
             />
             <Checkbox
-              label="Force pushing"
+              label={t('forcePushing')}
               value={
                 this.state.confirmForcePush
                   ? CheckboxValue.On
@@ -280,7 +281,7 @@ export class Prompts extends React.Component<
               onChange={this.onConfirmForcePushChanged}
             />
             <Checkbox
-              label="Undo commit"
+              label={t('undoCommit')}
               value={
                 this.state.confirmUndoCommit
                   ? CheckboxValue.On

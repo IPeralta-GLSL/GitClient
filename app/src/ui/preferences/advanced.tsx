@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { t } from '../../lib/i18n'
 import { DialogContent } from '../dialog'
 import { Checkbox, CheckboxValue } from '../lib/checkbox'
 import { LinkButton } from '../lib/link-button'
@@ -77,7 +78,7 @@ export class Advanced extends React.Component<
   private reportDesktopUsageLabel() {
     return (
       <span>
-        Help GitHub Desktop improve by submitting{' '}
+        {t('helpImprove')}{' '}
         <LinkButton uri={SamplesURL}>usage stats</LinkButton>
       </span>
     )
@@ -87,9 +88,9 @@ export class Advanced extends React.Component<
     return (
       <DialogContent>
         <div className="advanced-section">
-          <h2>Background updates</h2>
+          <h2>{t('backgroundUpdates')}</h2>
           <Checkbox
-            label="Show status icons in the repository list"
+            label={t('showStatusIcons')}
             value={
               this.props.repositoryIndicatorsEnabled
                 ? CheckboxValue.On
@@ -115,7 +116,7 @@ export class Advanced extends React.Component<
           </div>
         </div>
         <div className="advanced-section">
-          <h2>Usage</h2>
+          <h2>{t('usage')}</h2>
           <Checkbox
             label={this.reportDesktopUsageLabel()}
             value={
@@ -126,11 +127,11 @@ export class Advanced extends React.Component<
             onChange={this.onReportingOptOutChanged}
           />
         </div>
-        <h2>Network and credentials</h2>
+        <h2>{t('networkAndCredentials')}</h2>
         {this.renderSSHSettings()}
         <div className="advanced-section">
           <Checkbox
-            label={'Use Git Credential Manager'}
+            label={t('useCredentialManager')}
             value={
               this.state.useExternalCredentialHelper
                 ? CheckboxValue.On
@@ -165,7 +166,7 @@ export class Advanced extends React.Component<
     return (
       <div className="advanced-section">
         <Checkbox
-          label="Use system OpenSSH (recommended)"
+          label={t('useSystemOpenSSH')}
           value={
             this.props.useWindowsOpenSSH ? CheckboxValue.On : CheckboxValue.Off
           }

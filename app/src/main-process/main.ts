@@ -1,24 +1,25 @@
 import '../lib/logging/main/install'
 
 import {
-  app,
-  Menu,
-  BrowserWindow,
-  shell,
-  session,
-  systemPreferences,
-  nativeTheme,
+    app,
+    Menu,
+    BrowserWindow,
+    shell,
+    session,
+    systemPreferences,
+    nativeTheme,
 } from 'electron'
 import * as Fs from 'fs'
 
 import { AppWindow } from './app-window'
+import { setLocale, AppLocale } from '../lib/i18n'
 import { buildDefaultMenu, getAllMenuItems } from './menu'
 import { shellNeedsPatching, updateEnvironmentForProcess } from '../lib/shell'
 import { parseAppURL } from '../lib/parse-app-url'
 import {
-  handleSquirrelEvent,
-  installWindowsCLI,
-  uninstallWindowsCLI,
+    handleSquirrelEvent,
+    installWindowsCLI,
+    uninstallWindowsCLI,
 } from './squirrel-updater'
 import { fatalError } from '../lib/fatal-error'
 
@@ -26,8 +27,8 @@ import { log as writeLog } from './log'
 import { UNSAFE_openDirectory } from './shell'
 import { reportError } from './exception-reporting'
 import {
-  enableSourceMaps,
-  withSourceMappedStack,
+    enableSourceMaps,
+    withSourceMappedStack,
 } from '../lib/source-map-support'
 import { now } from './now'
 import { showUncaughtException } from './show-uncaught-exception'
@@ -38,15 +39,15 @@ import { installAliveOriginFilter } from './alive-origin-filter'
 import { installSameOriginFilter } from './same-origin-filter'
 import * as ipcMain from './ipc-main'
 import {
-  getArchitecture,
-  isAppRunningUnderARM64Translation,
+    getArchitecture,
+    isAppRunningUnderARM64Translation,
 } from '../lib/get-architecture'
 import { buildSpellCheckMenu } from './menu/build-spell-check-menu'
 import { getMainGUID, saveGUIDFile } from '../lib/get-main-guid'
 import {
-  getNotificationsPermission,
-  requestNotificationsPermission,
-  showNotification,
+    getNotificationsPermission,
+    requestNotificationsPermission,
+    showNotification,
 } from 'desktop-notifications'
 import { initializeDesktopNotifications } from './notifications'
 import parseCommandLineArgs from 'minimist'
@@ -359,6 +360,10 @@ app.on('ready', () => {
   )
 
   ipcMain.on('update-accounts', (_, accounts) => updateAccounts(accounts))
+
+  ipcMain.on('set-locale', (_, locale) => {
+    setLocale(locale as AppLocale)
+  })
 
   ipcMain.on('update-preferred-app-menu-item-labels', (_, labels) => {
     // The current application menu is mutable and we frequently

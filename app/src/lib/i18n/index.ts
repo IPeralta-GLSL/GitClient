@@ -12,9 +12,13 @@ const translations: Record<AppLocale, ITranslations> = {
 let currentLocale: AppLocale = loadLocale()
 
 function loadLocale(): AppLocale {
-  const stored = localStorage.getItem(localeKey)
-  if (stored === 'en' || stored === 'es') {
-    return stored
+  try {
+    const stored = localStorage.getItem(localeKey)
+    if (stored === 'en' || stored === 'es') {
+      return stored
+    }
+  } catch {
+    // localStorage not available (main process)
   }
   return 'en'
 }
@@ -29,7 +33,11 @@ export function getLocale(): AppLocale {
 
 export function setLocale(locale: AppLocale): void {
   currentLocale = locale
-  localStorage.setItem(localeKey, locale)
+  try {
+    localStorage.setItem(localeKey, locale)
+  } catch {
+    // localStorage not available (main process)
+  }
 }
 
 export { AppLocale, ITranslations }
