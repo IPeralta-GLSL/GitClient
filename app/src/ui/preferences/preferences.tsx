@@ -9,34 +9,34 @@ import { Git } from './git'
 import { assertNever } from '../../lib/fatal-error'
 import { Dialog, DialogFooter, DialogError } from '../dialog'
 import {
-  getGlobalConfigValue,
-  setGlobalConfigValue,
+    getGlobalConfigValue,
+    setGlobalConfigValue,
 } from '../../lib/git/config'
 import { lookupPreferredEmail } from '../../lib/email'
 import { Shell, getAvailableShells } from '../../lib/shells'
 import { getAvailableEditors } from '../../lib/editors/lookup'
 import {
-  gitAuthorNameIsValid,
-  InvalidGitAuthorNameMessage,
+    gitAuthorNameIsValid,
+    InvalidGitAuthorNameMessage,
 } from '../lib/identifier-rules'
 import { Appearance } from './appearance'
 import { ApplicationTheme } from '../lib/application-theme'
 import { OkCancelButtonGroup } from '../dialog/ok-cancel-button-group'
 import { Integrations } from './integrations'
 import {
-  UncommittedChangesStrategy,
-  defaultUncommittedChangesStrategy,
+    UncommittedChangesStrategy,
+    defaultUncommittedChangesStrategy,
 } from '../../models/uncommitted-changes-strategy'
 import { Octicon } from '../octicons'
 import * as octicons from '../octicons/octicons.generated'
 import {
-  isConfigFileLockError,
-  parseConfigLockFilePathFromError,
+    isConfigFileLockError,
+    parseConfigLockFilePathFromError,
 } from '../../lib/git'
 import { ConfigLockFileExists } from '../lib/config-lock-file-exists'
 import {
-  setDefaultBranch,
-  getDefaultBranch,
+    setDefaultBranch,
+    getDefaultBranch,
 } from '../../lib/helpers/default-branch'
 import { Prompts } from './prompts'
 import { Repository } from '../../models/repository'
@@ -45,19 +45,19 @@ import { Accessibility } from './accessibility'
 import { Language } from './language'
 import { t, getLocale, AppLocale } from '../../lib/i18n'
 import {
-  ICustomIntegration,
-  TargetPathArgument,
-  isValidCustomIntegration,
+    ICustomIntegration,
+    TargetPathArgument,
+    isValidCustomIntegration,
 } from '../../lib/custom-integration'
 import {
-  defaultGitHookEnvShell,
-  defaultHooksEnvEnabledValue,
-  getCacheHooksEnv,
-  getGitHookEnvShell,
-  getHooksEnvEnabled,
-  setCacheHooksEnv,
-  setGitHookEnvShell,
-  setHooksEnvEnabled,
+    defaultGitHookEnvShell,
+    defaultHooksEnvEnabledValue,
+    getCacheHooksEnv,
+    getGitHookEnvShell,
+    getHooksEnvEnabled,
+    setCacheHooksEnv,
+    setGitHookEnvShell,
+    setHooksEnvEnabled,
 } from '../../lib/hooks/config'
 
 interface IPreferencesProps {
