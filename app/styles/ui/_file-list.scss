@@ -44,6 +44,14 @@
     .octicon {
       vertical-align: text-bottom;
     }
+
+    .file-icon {
+      flex-shrink: 0;
+      width: 16px;
+      height: 16px;
+      margin-right: 4px;
+    }
+
     mark {
       font-weight: bold;
       background-color: inherit;

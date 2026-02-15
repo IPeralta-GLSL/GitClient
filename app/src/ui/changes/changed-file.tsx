@@ -1,6 +1,7 @@
 import * as React from 'react'
 
 import { PathLabel } from '../lib/path-label'
+import { FileIcon } from '../lib/file-icon'
 import { Octicon, iconForStatus } from '../octicons'
 import { Checkbox, CheckboxValue } from '../lib/checkbox'
 import { mapStatus } from '../../lib/status'
@@ -57,12 +58,14 @@ export class ChangedFile extends React.Component<IChangedFileProps, {}> {
     const listItemPadding = 10 * 2
     const checkboxWidth = 20
     const statusWidth = 16
+    const fileIconWidth = 20
     const filePadding = 5
 
     const availablePathWidth =
       availableWidth -
       listItemPadding -
       checkboxWidth -
+      fileIconWidth -
       filePadding -
       statusWidth
 
@@ -94,6 +97,8 @@ export class ChangedFile extends React.Component<IChangedFileProps, {}> {
             disabled={disableSelection}
           />
         </TooltippedContent>
+
+        <FileIcon path={path} />
 
         <PathLabel
           path={path}
