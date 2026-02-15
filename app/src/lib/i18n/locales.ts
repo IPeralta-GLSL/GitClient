@@ -109,6 +109,15 @@ export interface ITranslations {
   readonly githubEnterprise: string
   readonly signIn: string
   readonly signOut: string
+  readonly connect: string
+  readonly addAccountDialogTitle: string
+  readonly connectGithubDesc: string
+  readonly gitlab: string
+  readonly connectGitlabDesc: string
+  readonly bitbucket: string
+  readonly connectBitbucketDesc: string
+  readonly codeberg: string
+  readonly connectCodebergDesc: string
 
   readonly addExistingRepository: string
   readonly localPath: string

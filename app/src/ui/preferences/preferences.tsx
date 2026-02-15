@@ -424,6 +424,10 @@ export class Preferences extends React.Component<
     this.setState({ selectedGitTabIndex: index })
   }
 
+  private onProviderSignIn = (provider: 'github' | 'gitlab' | 'bitbucket' | 'codeberg') => {
+    this.props.dispatcher.beginProviderSignIn(provider)
+  }
+
   private onEnableGitHookEnvChanged = (enableGitHookEnv: boolean) => {
     this.setState({ enableGitHookEnv, hooksPreferencesDirty: true })
   }
@@ -449,6 +453,7 @@ export class Preferences extends React.Component<
             accounts={this.props.accounts}
             onDotComSignIn={this.onDotComSignIn}
             onEnterpriseSignIn={this.onEnterpriseSignIn}
+            onProviderSignIn={this.onProviderSignIn}
             onLogout={this.onLogout}
           />
         )

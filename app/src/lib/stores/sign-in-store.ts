@@ -2,17 +2,17 @@ import { Disposable } from 'event-kit'
 import { Account, isDotComAccount } from '../../models/account'
 import { fatalError } from '../fatal-error'
 import {
-  validateURL,
-  InvalidURLErrorName,
-  InvalidProtocolErrorName,
+    validateURL,
+    InvalidURLErrorName,
+    InvalidProtocolErrorName,
 } from '../../ui/lib/enterprise-validate-url'
 
 import {
-  fetchUser,
-  getDotComAPIEndpoint,
-  getEnterpriseAPIURL,
-  requestOAuthToken,
-  getOAuthAuthorizationURL,
+    fetchUser,
+    getDotComAPIEndpoint,
+    getEnterpriseAPIURL,
+    requestOAuthToken,
+    getOAuthAuthorizationURL,
 } from '../../lib/api'
 
 import { TypedBaseStore } from './base-store'
@@ -126,6 +126,7 @@ export interface IAuthenticationState extends ISignInState {
   readonly oauthState?: {
     state: string
     endpoint: string
+    provider?: 'github' | 'gitlab' | 'bitbucket' | 'codeberg'
     onAuthCompleted: (account: Account) => void
     onAuthError: (error: Error) => void
   }
@@ -296,11 +297,18 @@ export class SignInStore extends TypedBaseStore<SignInState | null> {
         oauthState: {
           state: csrfToken,
           endpoint,
+          provider: currentState.kind === SignInStep.Authentication ? currentState.oauthState?.provider : undefined,
           onAuthCompleted: resolve,
           onAuthError: reject,
         },
       })
-      shell.openExternal(getOAuthAuthorizationURL(endpoint, csrfToken))
+      // If a provider was attached to the auth state use it, otherwise default
+      // to GitHub. The provider will be resolved during resolveOAuthRequest.
+      const currentProvider =
+        this.state?.kind === SignInStep.Authentication
+          ? this.state.oauthState?.provider ?? 'github'
+          : 'github'
+      shell.openExternal(getOAuthAuthorizationURL(endpoint, csrfToken, currentProvider))
     })
       .then(account => {
         if (!this.state || this.state.kind !== SignInStep.Authentication) {
@@ -347,7 +355,8 @@ export class SignInStore extends TypedBaseStore<SignInState | null> {
     }
 
     const { endpoint } = this.state
-    const token = await requestOAuthToken(endpoint, action.code)
+    const provider = this.state.oauthState?.provider ?? 'github'
+    const token = await requestOAuthToken(endpoint, action.code, provider)
 
     if (token) {
       const account = await fetchUser(endpoint, token)
@@ -357,6 +366,48 @@ export class SignInStore extends TypedBaseStore<SignInState | null> {
         new Error('Failed retrieving authenticated user')
       )
     }
+  }
+
+  /**
+   * Initiate an OAuth sign in flow for a third-party provider.
+   * Provider tokens/IDs are expected to be supplied later via env vars.
+   */
+  public beginProviderSignIn(
+    provider: 'github' | 'gitlab' | 'bitbucket' | 'codeberg',
+    resultCallback?: (result: SignInResult) => void
+  ) {
+    if (this.state !== null) {
+      this.reset()
+    }
+
+    let endpoint = getDotComAPIEndpoint()
+    if (provider === 'gitlab') {
+      endpoint = 'https://gitlab.com'
+    } else if (provider === 'bitbucket') {
+      endpoint = 'https://bitbucket.org'
+    } else if (provider === 'codeberg') {
+      endpoint = 'https://codeberg.org'
+    }
+
+    // No existing-account warning handling for third-party providers for now
+    this.setState({
+      kind: SignInStep.Authentication,
+      endpoint,
+      error: null,
+      loading: false,
+      resultCallback: resultCallback ?? noop,
+      oauthState: {
+        state: '',
+        endpoint,
+        provider,
+        onAuthCompleted: (account: Account) => {
+          this.emitAuthenticate(account)
+        },
+        onAuthError: (e: Error) => {
+          this.setState({ kind: SignInStep.Authentication, endpoint, error: e, loading: false, resultCallback: resultCallback ?? noop })
+        },
+      },
+    })
   }
 
   /**

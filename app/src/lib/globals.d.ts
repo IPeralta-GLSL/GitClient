@@ -11,6 +11,19 @@ declare const __OAUTH_CLIENT_ID__: string | undefined
 /** The OAuth secret the app should use. */
 declare const __OAUTH_SECRET__: string | undefined
 
+/** GitLab OAuth client id */
+declare const __OAUTH_CLIENT_ID_GITLAB__: string
+/** GitLab OAuth secret */
+declare const __OAUTH_SECRET_GITLAB__: string
+/** Bitbucket OAuth client id */
+declare const __OAUTH_CLIENT_ID_BITBUCKET__: string
+/** Bitbucket OAuth secret */
+declare const __OAUTH_SECRET_BITBUCKET__: string
+/** Codeberg OAuth client id */
+declare const __OAUTH_CLIENT_ID_CODEBERG__: string
+/** Codeberg OAuth secret */
+declare const __OAUTH_SECRET_CODEBERG__: string
+
 /** Is the app being built to run on Darwin? */
 declare const __DARWIN__: boolean
 

@@ -2,25 +2,25 @@ import * as URL from 'url'
 import { Account } from '../models/account'
 
 import {
-  request,
-  parsedResponse,
-  HTTPMethod,
-  APIError,
-  urlWithQueryString,
-  getUserAgent,
+    request,
+    parsedResponse,
+    HTTPMethod,
+    APIError,
+    urlWithQueryString,
+    getUserAgent,
 } from './http'
 import { uuid } from './uuid'
 import { GitProtocol } from './remote-parsing'
 import {
-  getEndpointVersion,
-  isDotCom,
-  isGHE,
-  isGHES,
-  updateEndpointVersion,
+    getEndpointVersion,
+    isDotCom,
+    isGHE,
+    isGHES,
+    updateEndpointVersion,
 } from './endpoint-capabilities'
 import {
-  clearCertificateErrorSuppressionFor,
-  suppressCertificateErrorFor,
+    clearCertificateErrorSuppressionFor,
+    suppressCertificateErrorFor,
 } from './suppress-certificate-error'
 import { HttpStatusCode } from './http-status-code'
 import { CopilotError } from './copilot-error'
@@ -126,6 +126,16 @@ interface IFetchAllOptions<T> {
 
 const ClientID = process.env.TEST_ENV ? '' : __OAUTH_CLIENT_ID__
 const ClientSecret = process.env.TEST_ENV ? '' : __OAUTH_SECRET__
+
+// Provider-specific client ids/secrets (placeholders injected via app-info)
+const ClientIDGitLab = process.env.TEST_ENV ? '' : __OAUTH_CLIENT_ID_GITLAB__
+const ClientSecretGitLab = process.env.TEST_ENV ? '' : __OAUTH_SECRET_GITLAB__
+
+const ClientIDBitbucket = process.env.TEST_ENV ? '' : __OAUTH_CLIENT_ID_BITBUCKET__
+const ClientSecretBitbucket = process.env.TEST_ENV ? '' : __OAUTH_SECRET_BITBUCKET__
+
+const ClientIDCodeberg = process.env.TEST_ENV ? '' : __OAUTH_CLIENT_ID_CODEBERG__
+const ClientSecretCodeberg = process.env.TEST_ENV ? '' : __OAUTH_SECRET_CODEBERG__
 
 if (!ClientID || !ClientID.length || !ClientSecret || !ClientSecret.length) {
   log.warn(
@@ -2226,8 +2236,115 @@ export async function fetchUser(
   endpoint: string,
   token: string
 ): Promise<Account> {
-  const api = new API(endpoint, token)
+  // Attempt to detect common providers by hostname and use provider-specific
+  // endpoints when possible. This lets us support GitLab, Bitbucket and
+  // Codeberg (Gitea) style instances in addition to GitHub.
   try {
+    const parsed = new window.URL(endpoint)
+    const hostname = parsed.hostname.toLowerCase()
+
+    // GitLab
+    if (hostname.includes('gitlab')) {
+      const apiBase = endpoint.endsWith('/api/v4') ? endpoint : `${parsed.origin}/api/v4`
+      const resp = await fetch(`${apiBase}/user`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (!resp.ok) {
+        throw new Error(`GitLab fetch user failed: ${resp.status}`)
+      }
+      const user = await resp.json()
+      // GitLab email: need to fetch /user/emails
+      let emails: IAPIEmail[] = []
+      try {
+        const eResp = await fetch(`${apiBase}/user/emails`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        if (eResp.ok) {
+          const eJson = await eResp.json()
+          emails = eJson.map((e: any) => ({ email: e.email, verified: e.confirmed, primary: e.primary, visibility: e.visibility ?? null }))
+        }
+      } catch (e) {
+        log.warn('fetchUser: failed fetching GitLab emails', e)
+      }
+
+      return new Account(
+        user.username || user.login || user.name || '',
+        apiBase,
+        token,
+        emails,
+        user.avatar_url || '',
+        user.id || -1,
+        user.name || user.username || '',
+        undefined
+      )
+    }
+
+    // Bitbucket
+    if (hostname.includes('bitbucket')) {
+      // Bitbucket uses api.bitbucket.org
+      const apiBase = endpoint.includes('api.bitbucket.org') ? endpoint : 'https://api.bitbucket.org/2.0'
+      const resp = await fetch(`${apiBase}/user`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (!resp.ok) {
+        throw new Error(`Bitbucket fetch user failed: ${resp.status}`)
+      }
+      const user = await resp.json()
+
+      // Try fetch emails
+      let emails: IAPIEmail[] = []
+      try {
+        const eResp = await fetch('https://api.bitbucket.org/2.0/user/emails', {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        if (eResp.ok) {
+          const eJson = await eResp.json()
+          if (eJson && eJson.values) {
+            emails = eJson.values.map((e: any) => ({ email: e.email, verified: e.is_confirmed, primary: e.is_primary, visibility: null }))
+          }
+        }
+      } catch (e) {
+        log.warn('fetchUser: failed fetching Bitbucket emails', e)
+      }
+
+      return new Account(
+        user.username || user.slug || '',
+        apiBase,
+        token,
+        emails,
+        (user.links && user.links.avatar && user.links.avatar.href) || '',
+        user.account_id || -1,
+        user.display_name || user.username || '',
+        undefined
+      )
+    }
+
+    // Codeberg (Gitea-style)
+    if (hostname.includes('codeberg') || hostname.endsWith('.gitea')) {
+      const apiBase = endpoint.endsWith('/api/v1') ? endpoint : `${parsed.origin}/api/v1`
+      const resp = await fetch(`${apiBase}/user`, {
+        headers: { Authorization: `token ${token}` },
+      })
+      if (!resp.ok) {
+        throw new Error(`Codeberg fetch user failed: ${resp.status}`)
+      }
+      const user = await resp.json()
+      const emails: IAPIEmail[] = []
+
+      return new Account(
+        user.login || user.username || '',
+        apiBase,
+        token,
+        emails,
+        user.avatar_url || '',
+        user.id || -1,
+        user.full_name || user.name || user.login || '',
+        undefined
+      )
+    }
+
+    // Default: GitHub API
+    const api = new API(endpoint, token)
     const [user, emails, copilotInfo, features] = await Promise.all([
       api.fetchAccount(),
       api.fetchEmails(),
@@ -2346,9 +2463,38 @@ export function getAccountForEndpoint(
 
 export function getOAuthAuthorizationURL(
   endpoint: string,
-  state: string
+  state: string,
+  provider: 'github' | 'gitlab' | 'bitbucket' | 'codeberg' = 'github'
 ): string {
+  // Default to GitHub-style OAuth unless provider requires different URLs.
   const urlBase = getHTMLURL(endpoint)
+
+  if (provider === 'gitlab') {
+    // GitLab: /oauth/authorize
+    const scope = encodeURIComponent('read_user')
+    const client = encodeURIComponent(ClientIDGitLab)
+    const redirect = encodeURIComponent('oauth://oauth')
+    return `${urlBase}/oauth/authorize?client_id=${client}&redirect_uri=${redirect}&response_type=code&state=${state}&scope=${scope}`
+  }
+
+  if (provider === 'bitbucket') {
+    // Bitbucket: https://bitbucket.org/site/oauth2/authorize
+    const scope = encodeURIComponent('account email')
+    const client = encodeURIComponent(ClientIDBitbucket)
+    const redirect = encodeURIComponent('oauth://oauth')
+    // Bitbucket uses a separate host for authorization
+    return `https://bitbucket.org/site/oauth2/authorize?client_id=${client}&response_type=code&state=${state}&redirect_uri=${redirect}&scope=${scope}`
+  }
+
+  if (provider === 'codeberg') {
+    // Codeberg (Gitea-style) - use /login/oauth/authorize
+    const scope = encodeURIComponent('read_user')
+    const client = encodeURIComponent(ClientIDCodeberg)
+    const redirect = encodeURIComponent('oauth://oauth')
+    return `${urlBase}/login/oauth/authorize?client_id=${client}&redirect_uri=${redirect}&response_type=code&state=${state}&scope=${scope}`
+  }
+
+  // GitHub default
   const scope = encodeURIComponent(oauthScopes.join(' '))
 
   return new window.URL(
@@ -2359,9 +2505,75 @@ export function getOAuthAuthorizationURL(
 
 export async function requestOAuthToken(
   endpoint: string,
-  code: string
+  code: string,
+  provider: 'github' | 'gitlab' | 'bitbucket' | 'codeberg' = 'github'
 ): Promise<string | null> {
   try {
+    if (provider === 'gitlab') {
+      // GitLab token exchange
+      const urlBase = new window.URL(endpoint)
+      // Ensure we point to /oauth/token on the HTML/base URL
+      const tokenUrl = `${urlBase.origin}/oauth/token`
+      const body = new URLSearchParams()
+      body.set('client_id', ClientIDGitLab)
+      body.set('client_secret', ClientSecretGitLab)
+      body.set('code', code)
+      body.set('grant_type', 'authorization_code')
+      body.set('redirect_uri', 'oauth://oauth')
+
+      const response = await fetch(tokenUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: body.toString(),
+      })
+
+      const json = await response.json()
+      return json.access_token || null
+    }
+
+    if (provider === 'bitbucket') {
+      // Bitbucket token exchange uses basic auth against token endpoint
+      const tokenUrl = 'https://bitbucket.org/site/oauth2/access_token'
+      const body = new URLSearchParams()
+      body.set('grant_type', 'authorization_code')
+      body.set('code', code)
+      body.set('redirect_uri', 'oauth://oauth')
+
+      const creds = `${encodeURIComponent(ClientIDBitbucket)}:${encodeURIComponent(ClientSecretBitbucket)}`
+      const response = await fetch(tokenUrl, {
+        method: 'POST',
+        headers: {
+          Authorization: `Basic ${btoa(creds)}`,
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: body.toString(),
+      })
+
+      const json = await response.json()
+      return json.access_token || null
+    }
+
+    if (provider === 'codeberg') {
+      // Codeberg (Gitea) token exchange
+      const urlBase = new window.URL(endpoint)
+      const tokenUrl = `${urlBase.origin}/login/oauth/access_token`
+      const body = new URLSearchParams()
+      body.set('client_id', ClientIDCodeberg)
+      body.set('client_secret', ClientSecretCodeberg)
+      body.set('code', code)
+      body.set('redirect_uri', 'oauth://oauth')
+
+      const response = await fetch(tokenUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json' },
+        body: body.toString(),
+      })
+
+      const json = await response.json()
+      return json.access_token || null
+    }
+
+    // Default GitHub flow
     const urlBase = getHTMLURL(endpoint)
     const response = await request(
       urlBase,

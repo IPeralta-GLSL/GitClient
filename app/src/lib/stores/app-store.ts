@@ -6389,6 +6389,13 @@ export class AppStore extends TypedBaseStore<IAppState> {
     return this.signInStore.beginDotComSignIn(resultCallback)
   }
 
+  public _beginProviderSignIn(
+    provider: 'github' | 'gitlab' | 'bitbucket' | 'codeberg',
+    resultCallback?: (result: SignInResult) => void
+  ) {
+    return this.signInStore.beginProviderSignIn(provider, resultCallback)
+  }
+
   public _beginEnterpriseSignIn(
     resultCallback?: (result: SignInResult) => void
   ) {

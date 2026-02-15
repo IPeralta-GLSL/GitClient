@@ -1596,6 +1596,14 @@ export class Dispatcher {
     }
   }
 
+  public beginProviderSignIn(
+    provider: 'github' | 'gitlab' | 'bitbucket' | 'codeberg',
+    resultCallback?: (result: SignInResult) => void
+  ) {
+    this.appStore._beginProviderSignIn(provider, resultCallback)
+    this.requestBrowserAuthentication()
+  }
+
   /**
    * Initiate an OAuth sign in using the system configured browser.
    * This method must only be called when the store is in the authentication
