@@ -1,5 +1,90 @@
 import { git } from './core'
 import { Repository } from '../../models/repository'
+import * as Path from 'path'
+
+/**
+ * Track one or more file patterns with Git LFS.
+ *
+ * This runs `git lfs track <pattern>` for each pattern provided
+ * and stages the updated .gitattributes file.
+ */
+export async function trackFilesWithLFS(
+  repository: Repository,
+  patterns: ReadonlyArray<string>
+): Promise<void> {
+  for (const pattern of patterns) {
+    await git(['lfs', 'track', pattern], repository.path, 'trackFilesWithLFS')
+  }
+
+  // Stage the .gitattributes file so changes are included in the next commit
+  const gitattributesPath = Path.join(repository.path, '.gitattributes')
+  await git(['add', gitattributesPath], repository.path, 'stageLFSAttributes')
+}
+
+/**
+ * Track specific file paths with Git LFS by their file extension.
+ *
+ * Given a list of file paths, this extracts unique extensions and
+ * calls `git lfs track "*.ext"` for each.
+ */
+export async function trackPathsByExtensionWithLFS(
+  repository: Repository,
+  filePaths: ReadonlyArray<string>
+): Promise<ReadonlyArray<string>> {
+  const extensions = new Set<string>()
+
+  for (const filePath of filePaths) {
+    const ext = Path.extname(filePath)
+    if (ext) {
+      extensions.add(`*${ext}`)
+    } else {
+      // No extension — track the file directly
+      extensions.add(filePath)
+    }
+  }
+
+  const patterns = Array.from(extensions)
+  await trackFilesWithLFS(repository, patterns)
+  return patterns
+}
+
+/**
+ * Get the list of currently tracked LFS patterns.
+ */
+export async function getLFSTrackedPatterns(
+  repository: Repository
+): Promise<ReadonlyArray<string>> {
+  const env = {
+    GIT_LFS_TRACK_NO_INSTALL_HOOKS: '1',
+  }
+  const result = await git(['lfs', 'track'], repository.path, 'getLFSTrackedPatterns', {
+    env,
+  })
+
+  const patterns: string[] = []
+  const lines = result.stdout.split('\n')
+  for (const line of lines) {
+    // Lines look like: "    *.psd (.gitattributes)"
+    const match = /^\s+(.+)\s+\(/.exec(line)
+    if (match) {
+      patterns.push(match[1])
+    }
+  }
+
+  return patterns
+}
+
+/**
+ * Check whether Git LFS is installed and available.
+ */
+export async function isGitLFSInstalled(): Promise<boolean> {
+  try {
+    await git(['lfs', 'version'], __dirname, 'isGitLFSInstalled')
+    return true
+  } catch {
+    return false
+  }
+}
 
 /** Install the global LFS filters. */
 export async function installGlobalLFSFilters(force: boolean): Promise<void> {

@@ -253,4 +253,14 @@ export const es: ITranslations = {
   isPotentiallyUnsafe: 'es potencialmente inseguro',
   itWasLastSeenAt: 'Fue visto por última vez en',
   checkAgain: 'Comprobar de nuevo.',
+
+  filesTooLarge: 'Archivos demasiado grandes',
+  oversizedFilesWarning: 'Los siguientes archivos superan los 100MB. Si haces commit de estos archivos, ya no podrás hacer push de este repositorio a GitHub.com.',
+  lfsRecommendation: 'Recomendamos usar Git LFS para rastrear estos archivos grandes. Haz clic abajo para configurar el rastreo LFS automáticamente.',
+  trackWithLFS: 'Rastrear con Git LFS',
+  lfsNotInstalled: 'Git LFS no está instalado. Instala Git LFS para rastrear archivos grandes y evitar fallos de push.',
+  lfsTrackingSuccess: 'Los siguientes patrones ahora están rastreados por Git LFS:',
+  lfsTrackingSuccessHint: 'El archivo .gitattributes ha sido actualizado y preparado. Ahora puedes hacer commit de tus archivos de forma segura.',
+  commitAnyway: 'Hacer commit de todos modos',
+  commitNow: 'Hacer commit ahora',
 }

@@ -1,15 +1,18 @@
 import * as React from 'react'
 import { Dialog, DialogContent, DialogFooter } from '../dialog'
-import { LinkButton } from '../lib/link-button'
 import { PathText } from '../lib/path-text'
 import { Dispatcher } from '../dispatcher'
 import { Repository } from '../../models/repository'
 import { ICommitContext } from '../../models/commit'
 import { DefaultCommitMessage } from '../../models/commit-message'
 import { OkCancelButtonGroup } from '../dialog/ok-cancel-button-group'
-
-const GitLFSWebsiteURL =
-  'https://help.github.com/articles/versioning-large-files/'
+import { t } from '../../lib/i18n'
+import {
+    trackPathsByExtensionWithLFS,
+    isGitLFSInstalled,
+} from '../../lib/git/lfs'
+import { Button } from '../lib/button'
+import { Loading } from '../lib/loading'
 
 interface IOversizedFilesProps {
   readonly oversizedFiles: ReadonlyArray<string>
@@ -19,44 +22,120 @@ interface IOversizedFilesProps {
   readonly repository: Repository
 }
 
+interface IOversizedFilesState {
+  readonly isTrackingWithLFS: boolean
+  readonly lfsTrackingComplete: boolean
+  readonly trackedPatterns: ReadonlyArray<string>
+  readonly lfsAvailable: boolean | null
+}
+
 /** A dialog to display a list of files that are too large to commit. */
-export class OversizedFiles extends React.Component<IOversizedFilesProps> {
+export class OversizedFiles extends React.Component<
+  IOversizedFilesProps,
+  IOversizedFilesState
+> {
   public constructor(props: IOversizedFilesProps) {
     super(props)
+
+    this.state = {
+      isTrackingWithLFS: false,
+      lfsTrackingComplete: false,
+      trackedPatterns: [],
+      lfsAvailable: null,
+    }
+  }
+
+  public async componentDidMount() {
+    const available = await isGitLFSInstalled()
+    this.setState({ lfsAvailable: available })
   }
 
   public render() {
     return (
       <Dialog
         id="oversized-files"
-        title={__DARWIN__ ? 'Files Too Large' : 'Files too large'}
+        title={t('filesTooLarge')}
         onSubmit={this.onSubmit}
         onDismissed={this.props.onDismissed}
         type="warning"
       >
         <DialogContent>
-          <p>
-            The following files are over 100MB.{' '}
-            <strong>
-              If you commit these files, you will no longer be able to push this
-              repository to GitHub.com.
-            </strong>
-          </p>
-          {this.renderFileList()}
-          <p className="recommendation">
-            We recommend you avoid committing these files or use{' '}
-            <LinkButton uri={GitLFSWebsiteURL}>Git LFS</LinkButton> to store
-            large files on GitHub.
-          </p>
+          {this.state.lfsTrackingComplete
+            ? this.renderLFSSuccess()
+            : this.renderWarning()}
         </DialogContent>
 
         <DialogFooter>
-          <OkCancelButtonGroup
-            destructive={true}
-            okButtonText={__DARWIN__ ? 'Commit Anyway' : 'Commit anyway'}
-          />
+          {this.state.lfsTrackingComplete
+            ? this.renderSuccessFooter()
+            : this.renderWarningFooter()}
         </DialogFooter>
       </Dialog>
+    )
+  }
+
+  private renderWarning() {
+    return (
+      <>
+        <p>
+          {t('oversizedFilesWarning')}
+        </p>
+        {this.renderFileList()}
+        {this.state.lfsAvailable === true && (
+          <div className="lfs-recommendation">
+            <p>{t('lfsRecommendation')}</p>
+            <Button
+              onClick={this.onTrackWithLFS}
+              disabled={this.state.isTrackingWithLFS}
+              className="lfs-track-button"
+            >
+              {this.state.isTrackingWithLFS && <Loading />}
+              {t('trackWithLFS')}
+            </Button>
+          </div>
+        )}
+        {this.state.lfsAvailable === false && (
+          <p className="recommendation">
+            {t('lfsNotInstalled')}
+          </p>
+        )}
+      </>
+    )
+  }
+
+  private renderLFSSuccess() {
+    return (
+      <>
+        <p>{t('lfsTrackingSuccess')}</p>
+        <div className="files-list">
+          <ul>
+            {this.state.trackedPatterns.map(pattern => (
+              <li key={pattern}>
+                <code>{pattern}</code>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <p>{t('lfsTrackingSuccessHint')}</p>
+      </>
+    )
+  }
+
+  private renderWarningFooter() {
+    return (
+      <OkCancelButtonGroup
+        destructive={true}
+        okButtonText={t('commitAnyway')}
+      />
+    )
+  }
+
+  private renderSuccessFooter() {
+    return (
+      <OkCancelButtonGroup
+        okButtonText={t('commitNow')}
+        cancelButtonText={t('close')}
+      />
     )
   }
 
@@ -72,6 +151,29 @@ export class OversizedFiles extends React.Component<IOversizedFilesProps> {
         </ul>
       </div>
     )
+  }
+
+  private onTrackWithLFS = async () => {
+    this.setState({ isTrackingWithLFS: true })
+
+    try {
+      const patterns = await trackPathsByExtensionWithLFS(
+        this.props.repository,
+        this.props.oversizedFiles
+      )
+
+      this.setState({
+        isTrackingWithLFS: false,
+        lfsTrackingComplete: true,
+        trackedPatterns: patterns,
+      })
+
+      // Refresh the repo to pick up .gitattributes changes
+      this.props.dispatcher.refreshRepository(this.props.repository)
+    } catch (error) {
+      this.setState({ isTrackingWithLFS: false })
+      this.props.dispatcher.postError(error)
+    }
   }
 
   private onSubmit = async () => {

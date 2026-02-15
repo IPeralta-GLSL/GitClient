@@ -253,4 +253,14 @@ export interface ITranslations {
   readonly isPotentiallyUnsafe: string
   readonly itWasLastSeenAt: string
   readonly checkAgain: string
+
+  readonly filesTooLarge: string
+  readonly oversizedFilesWarning: string
+  readonly lfsRecommendation: string
+  readonly trackWithLFS: string
+  readonly lfsNotInstalled: string
+  readonly lfsTrackingSuccess: string
+  readonly lfsTrackingSuccessHint: string
+  readonly commitAnyway: string
+  readonly commitNow: string
 }
