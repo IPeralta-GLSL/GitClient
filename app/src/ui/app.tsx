@@ -3007,7 +3007,6 @@ export class App extends React.Component<IAppProps, IAppState> {
     return (
       <ToolbarButton
         title={t('openFolder')}
-        description={selection.repository.path}
         icon={octicons.fileDirectoryFill}
         onClick={this.onOpenFolder}
         className="open-folder-button"
@@ -3023,6 +3022,32 @@ export class App extends React.Component<IAppProps, IAppState> {
     }
 
     shell.showFolderContents(selection.repository.path)
+  }
+
+  private renderOpenTerminalButton() {
+    const selection = this.state.selectedState
+    if (!selection || selection.type !== SelectionType.Repository) {
+      return null
+    }
+
+    return (
+      <ToolbarButton
+        title={t('openTerminal')}
+        icon={octicons.terminal}
+        onClick={this.onOpenTerminal}
+        className="open-terminal-button"
+        style={ToolbarButtonStyle.Subtitle}
+      />
+    )
+  }
+
+  private onOpenTerminal = () => {
+    const selection = this.state.selectedState
+    if (!selection || selection.type !== SelectionType.Repository) {
+      return
+    }
+
+    this.props.dispatcher.openShell(selection.repository.path)
   }
 
   private renderFetchButton() {
@@ -3334,6 +3359,7 @@ export class App extends React.Component<IAppProps, IAppState> {
       <Toolbar id="desktop-app-toolbar">
         {this.renderBranchToolbarButton()}
         {this.renderOpenFolderButton()}
+        {this.renderOpenTerminalButton()}
         {this.renderPushPullToolbarButton()}
         {this.renderFetchButton()}
       </Toolbar>

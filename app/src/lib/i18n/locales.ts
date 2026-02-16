@@ -4,6 +4,7 @@ export interface ITranslations {
   readonly currentBranch: string
   readonly noBranchSelected: string
   readonly openFolder: string
+  readonly openTerminal: string
   readonly fetchOrigin: string
   readonly lastFetched: string
   readonly neverFetched: string

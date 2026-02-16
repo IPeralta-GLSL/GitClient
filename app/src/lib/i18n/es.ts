@@ -3,7 +3,8 @@ import { ITranslations } from './locales'
 export const es: ITranslations = {
   currentBranch: 'Rama actual',
   noBranchSelected: 'Ninguna rama seleccionada',
-  openFolder: 'Abrir carpeta',
+  openFolder: 'Carpeta',
+  openTerminal: 'Terminal',
   fetchOrigin: 'Obtener',
   lastFetched: 'Última obtención',
   neverFetched: 'Nunca obtenido',

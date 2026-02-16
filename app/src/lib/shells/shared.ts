@@ -79,9 +79,20 @@ export async function findShellOrDefault(shell: Shell): Promise<AnyFoundShell> {
   const found = available.find(s => s.shell === shell)
   if (found) {
     return found
-  } else {
-    return available.find(s => s.shell === Default)!
   }
+
+  const defaultShell = available.find(s => s.shell === Default)
+  if (defaultShell) {
+    return defaultShell
+  }
+
+  if (available.length > 0) {
+    return available[0]
+  }
+
+  throw new ShellError(
+    `No terminal emulators found. Please install a supported terminal application or configure a custom shell in Settings.`
+  )
 }
 
 /** Launch the given shell at the path. */

@@ -3,7 +3,8 @@ import { ITranslations } from './locales'
 export const en: ITranslations = {
   currentBranch: 'Current branch',
   noBranchSelected: 'No branch selected',
-  openFolder: 'Open folder',
+  openFolder: 'Folder',
+  openTerminal: 'Terminal',
   fetchOrigin: 'Fetch',
   lastFetched: 'Last fetched',
   neverFetched: 'Never fetched',
