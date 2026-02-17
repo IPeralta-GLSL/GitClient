@@ -25,8 +25,11 @@ export const es: ITranslations = {
   cannotPublishDetached: 'No se puede publicar HEAD separado',
   rebaseInProgress: 'Rebase en progreso',
 
-  recentRepositories: 'Repositorios Recientes',
+  recentRepositories: 'Recientes',
   noRecentRepositories: 'No hay repositorios recientes',
+  allRepositories: 'Todos los Repositorios',
+  searchRepositories: 'Buscar repositorios…',
+  noRepositoriesFound: 'No se encontraron repositorios',
   start: 'Inicio',
   cloneRepository: 'Clonar Repositorio',
   cloneRepositoryDesc: 'Clonar un repositorio desde una URL',

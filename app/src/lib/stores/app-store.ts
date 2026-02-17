@@ -360,9 +360,9 @@ const LastSelectedRepositoryIDKey = 'last-selected-repository-id'
 const RecentRepositoriesKey = 'recently-selected-repositories'
 /**
  *  maximum number of repositories shown in the "Recent" repositories group
- *  in the repository switcher dropdown
+ *  in the repository switcher dropdown and the start tab
  */
-const RecentRepositoriesLength = 3
+const RecentRepositoriesLength = 20
 
 const defaultSidebarWidth: number = 250
 const sidebarWidthConfigKey: string = 'sidebar-width'
@@ -1986,6 +1986,7 @@ export class AppStore extends TypedBaseStore<IAppState> {
     if (previousRepositoryId !== null) {
       recentRepositories.unshift(previousRepositoryId)
     }
+    recentRepositories.unshift(currentRepositoryId)
     const slicedRecentRepositories = recentRepositories.slice(
       0,
       RecentRepositoriesLength

@@ -25,8 +25,11 @@ export const en: ITranslations = {
   cannotPublishDetached: 'Cannot publish detached HEAD',
   rebaseInProgress: 'Rebase in progress',
 
-  recentRepositories: 'Recent Repositories',
+  recentRepositories: 'Recent',
   noRecentRepositories: 'No recent repositories',
+  allRepositories: 'All Repositories',
+  searchRepositories: 'Search repositories…',
+  noRepositoriesFound: 'No repositories found',
   start: 'Start',
   cloneRepository: 'Clone Repository',
   cloneRepositoryDesc: 'Clone a repository from a URL',

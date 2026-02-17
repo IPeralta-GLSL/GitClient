@@ -27,6 +27,9 @@ export interface ITranslations {
 
   readonly recentRepositories: string
   readonly noRecentRepositories: string
+  readonly allRepositories: string
+  readonly searchRepositories: string
+  readonly noRepositoriesFound: string
   readonly start: string
   readonly cloneRepository: string
   readonly cloneRepositoryDesc: string

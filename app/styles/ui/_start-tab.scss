@@ -1,7 +1,7 @@
 .start-tab {
   display: flex;
   flex: 1;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   background-color: var(--box-background-color);
   overflow-y: auto;
@@ -10,8 +10,9 @@
     display: flex;
     flex-direction: column;
     width: 100%;
-    max-width: 700px;
+    max-width: 800px;
     padding: var(--spacing-quad);
+    padding-top: var(--spacing-double);
   }
 
   .start-tab-header {
@@ -19,18 +20,18 @@
     flex-direction: row;
     align-items: center;
     gap: var(--spacing);
-    margin-bottom: var(--spacing-triple);
+    margin-bottom: var(--spacing-double);
 
     .start-tab-logo {
-      width: 32px;
-      height: 32px;
+      width: 28px;
+      height: 28px;
       color: var(--focus-color);
     }
 
     h1 {
       margin: 0;
-      font-size: var(--font-size-xxl);
-      font-weight: var(--font-weight-light);
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-semibold);
       color: var(--text-color);
     }
   }
@@ -39,28 +40,104 @@
     display: flex;
     flex-direction: row;
     gap: var(--spacing-quad);
+    min-height: 0;
 
     @media (max-width: 600px) {
       flex-direction: column;
     }
   }
 
+  // Left column — repos
   .start-tab-recent {
-    flex: 1;
+    flex: 1.4;
     min-width: 0;
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 180px);
+  }
+
+  // Search bar
+  .start-tab-search {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-half);
+    padding: 6px 10px;
+    margin-bottom: var(--spacing);
+    border-radius: var(--border-radius);
+    background-color: var(--box-alt-background-color);
+    border: 1px solid var(--box-border-color);
+    transition: border-color 0.15s ease;
+
+    &:focus-within {
+      border-color: var(--focus-color);
+    }
+
+    .search-icon {
+      width: 14px;
+      height: 14px;
+      color: var(--text-secondary-color);
+      flex-shrink: 0;
+    }
+
+    .search-input {
+      flex: 1;
+      border: none;
+      outline: none;
+      background: transparent;
+      color: var(--text-color);
+      font-size: var(--font-size);
+      font-family: var(--font-family-sans-serif);
+      line-height: 1.4;
+
+      &::placeholder {
+        color: var(--text-secondary-color);
+        opacity: 0.7;
+      }
+    }
+  }
+
+  // Scrollable repo lists container
+  .start-tab-repo-lists {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--box-border-color);
+      border-radius: 3px;
+
+      &:hover {
+        background-color: var(--text-secondary-color);
+      }
+    }
+  }
+
+  .repo-section {
+    margin-bottom: var(--spacing);
 
     h2 {
-      font-size: var(--font-size-md);
+      font-size: var(--font-size-sm);
       font-weight: var(--font-weight-semibold);
       color: var(--text-secondary-color);
-      margin: 0 0 var(--spacing) 0;
+      margin: 0 0 4px 0;
+      padding: 4px 6px;
       display: flex;
       align-items: center;
       gap: var(--spacing-half);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
 
       .octicon {
-        width: 16px;
-        height: 16px;
+        width: 14px;
+        height: 14px;
       }
     }
   }
@@ -76,7 +153,7 @@
     flex-direction: row;
     align-items: center;
     gap: var(--spacing);
-    padding: var(--spacing) var(--spacing);
+    padding: 6px 8px;
     border-radius: var(--border-radius);
     cursor: pointer;
     transition: background-color 0.1s ease;
@@ -108,11 +185,12 @@
     }
 
     .repo-path {
-      font-size: var(--font-size-sm);
+      font-size: 11px;
       color: var(--text-secondary-color);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      opacity: 0.7;
     }
   }
 
@@ -120,18 +198,22 @@
     color: var(--text-secondary-color);
     font-size: var(--font-size-sm);
     margin: 0;
-    padding: var(--spacing);
+    padding: var(--spacing-half) 8px;
   }
 
+  // Right column — actions
   .start-tab-actions {
-    flex: 1;
-    min-width: 0;
+    flex: 0.8;
+    min-width: 200px;
 
     h2 {
-      font-size: var(--font-size-md);
+      font-size: var(--font-size-sm);
       font-weight: var(--font-weight-semibold);
       color: var(--text-secondary-color);
-      margin: 0 0 var(--spacing) 0;
+      margin: 0 0 var(--spacing-half) 0;
+      padding: 4px 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     .start-action-btn {
@@ -140,8 +222,8 @@
       flex-direction: row;
       align-items: center;
       gap: var(--spacing);
-      padding: var(--spacing) var(--spacing-double);
-      margin-bottom: var(--spacing);
+      padding: 8px 12px;
+      margin-bottom: 6px;
       height: auto;
       text-align: left;
       background-color: var(--box-alt-background-color);
@@ -156,8 +238,8 @@
       }
 
       > .octicon {
-        width: 20px;
-        height: 20px;
+        width: 18px;
+        height: 18px;
         color: var(--focus-color);
         flex-shrink: 0;
       }
@@ -174,7 +256,7 @@
       }
 
       .action-desc {
-        font-size: var(--font-size-sm);
+        font-size: 11px;
         color: var(--text-secondary-color);
         font-weight: normal;
       }
