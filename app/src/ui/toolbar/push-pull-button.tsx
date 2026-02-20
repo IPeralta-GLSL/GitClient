@@ -455,10 +455,16 @@ export class PushPullButton extends React.Component<
         {...this.defaultButtonProps()}
         title={t('publishBranch')}
         description={description}
-        icon={octicons.upload}
+        icon={octicons.arrowUp}
         onClick={onClick}
         className={className}
-      />
+      >
+        <div className="ahead-behind">
+          <span>
+            <Octicon symbol={octicons.arrowUp} />
+          </span>
+        </div>
+      </ToolbarButton>
     )
   }
 
