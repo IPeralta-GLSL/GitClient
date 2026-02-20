@@ -1,90 +1,91 @@
 import * as Path from 'path'
 import {
-  getNonForkGitHubRepository,
-  isRepositoryWithForkedGitHubRepository,
-  Repository,
+    getNonForkGitHubRepository,
+    isRepositoryWithForkedGitHubRepository,
+    Repository,
 } from '../../models/repository'
 import {
-  WorkingDirectoryFileChange,
-  AppFileStatusKind,
+    WorkingDirectoryFileChange,
+    AppFileStatusKind,
 } from '../../models/status'
 import {
-  Branch,
-  BranchType,
-  IAheadBehind,
-  ICompareResult,
+    Branch,
+    BranchType,
+    IAheadBehind,
+    ICompareResult,
 } from '../../models/branch'
 import { Tip, TipState } from '../../models/tip'
 import { Commit } from '../../models/commit'
 import { IRemote } from '../../models/remote'
 import { IFetchProgress, IRevertProgress } from '../../models/progress'
 import {
-  ICommitMessage,
-  DefaultCommitMessage,
+    ICommitMessage,
+    DefaultCommitMessage,
 } from '../../models/commit-message'
 import { ComparisonMode } from '../app-state'
 
 import { IAppShell } from '../app-shell'
 import {
-  DiscardChangesError,
-  ErrorWithMetadata,
-  IErrorMetadata,
+    DiscardChangesError,
+    ErrorWithMetadata,
+    IErrorMetadata,
 } from '../error-with-metadata'
 import { queueWorkHigh } from '../../lib/queue-work'
 
 import {
-  reset,
-  GitResetMode,
-  getRemotes,
-  fetch as fetchRepo,
-  fetchRefspec,
-  getRecentBranches,
-  getBranches,
-  deleteRef,
-  getCommits,
-  merge,
-  setRemoteURL,
-  getStatus,
-  IStatusResult,
-  getCommit,
-  IndexStatus,
-  getIndexChanges,
-  checkoutIndex,
-  discardChangesFromSelection,
-  checkoutPaths,
-  resetPaths,
-  revertCommit,
-  unstageAllFiles,
-  addRemote,
-  listSubmodules,
-  resetSubmodulePaths,
-  parseTrailers,
-  mergeTrailers,
-  getTrailerSeparatorCharacters,
-  parseSingleUnfoldedTrailer,
-  isCoAuthoredByTrailer,
-  getAheadBehind,
-  revRange,
-  revSymmetricDifference,
-  getConfigValue,
-  removeRemote,
-  createTag,
-  getAllTags,
-  deleteTag,
-  MergeResult,
-  createBranch,
-  updateRemoteHEAD,
-  getRemoteHEAD,
-  MergeOptions,
+    reset,
+    GitResetMode,
+    getRemotes,
+    fetch as fetchRepo,
+    fetchRefspec,
+    getRecentBranches,
+    getBranches,
+    deleteRef,
+    getCommits,
+    merge,
+    setRemoteURL,
+    getStatus,
+    IStatusResult,
+    getCommit,
+    IndexStatus,
+    getIndexChanges,
+    checkoutIndex,
+    discardChangesFromSelection,
+    checkoutPaths,
+    resetPaths,
+    revertCommit,
+    unstageAllFiles,
+    addRemote,
+    listSubmodules,
+    resetSubmodulePaths,
+    parseTrailers,
+    mergeTrailers,
+    getTrailerSeparatorCharacters,
+    parseSingleUnfoldedTrailer,
+    isCoAuthoredByTrailer,
+    getAheadBehind,
+    revRange,
+    revSymmetricDifference,
+    getConfigValue,
+    removeRemote,
+    createTag,
+    getAllTags,
+    deleteTag,
+    MergeResult,
+    createBranch,
+    updateRemoteHEAD,
+    getRemoteHEAD,
+    MergeOptions,
 } from '../git'
 import { GitError as DugiteError } from '../../lib/git'
 import { GitError } from 'dugite'
 import { RetryAction, RetryActionType } from '../../models/retry-actions'
 import { UpstreamAlreadyExistsError } from './upstream-already-exists-error'
 import { forceUnwrap } from '../fatal-error'
+import { git } from '../git/core'
 import {
-  findUpstreamRemote,
-  UpstreamRemoteName,
+    findUpstreamRemote,
+    UpstreamRemoteName,
 } from './helpers/find-upstream-remote'
 import { findDefaultRemote } from './helpers/find-default-remote'
 import { Author, isKnownAuthor } from '../../models/author'
@@ -142,6 +143,7 @@ export class GitStore extends BaseStore {
   private _coAuthors: ReadonlyArray<Author> = []
 
   private _aheadBehind: IAheadBehind | null = null
+  private _unpushedCommits: number | null = null
 
   private _tagsToPush: ReadonlyArray<string> = []
 
@@ -1022,11 +1024,14 @@ export class GitStore extends BaseStore {
           currentBranch.upstream
         )
         this._aheadBehind = await getAheadBehind(this.repository, range)
+        this._unpushedCommits = null
       } else {
         this._aheadBehind = null
+        this._unpushedCommits = await this.getUnpushedCommits(currentBranch)
       }
     } else {
       this._aheadBehind = null
+      this._unpushedCommits = null
     }
 
     this.emitUpdate()
@@ -1140,6 +1145,12 @@ export class GitStore extends BaseStore {
     this._aheadBehind = status.branchAheadBehind || null
 
     const { currentBranch, currentTip } = status
+
+    if (currentBranch && !status.currentUpstreamBranch && currentTip) {
+      this._unpushedCommits = await this.getUnpushedCommits({ name: currentBranch })
+    } else {
+      this._unpushedCommits = null
+    }
 
     if (currentBranch || currentTip) {
       if (currentTip && currentBranch) {
@@ -1390,6 +1401,33 @@ export class GitStore extends BaseStore {
    */
   public get aheadBehind(): IAheadBehind | null {
     return this._aheadBehind
+  }
+
+  /**
+   * The number of unpushed commits for the current branch when it has no upstream.
+   */
+  public get unpushedCommits(): number | null {
+    return this._unpushedCommits
+  }
+
+  private async getUnpushedCommits(branch: { name: string }): Promise<number | null> {
+    try {
+      const result = await git(
+        ['rev-list', '--count', branch.name, '--not', '--remotes'],
+        this.repository.path,
+        'getUnpushedCommits',
+        { expectedErrors: new Set([GitError.BadRevision]) }
+      )
+      if (result.gitError !== GitError.BadRevision) {
+        const ahead = parseInt(result.stdout.trim(), 10)
+        if (!isNaN(ahead)) {
+          return ahead
+        }
+      }
+    } catch {
+      // Ignored
+    }
+    return null
   }
 
   /** The list of configured remotes for the repository */

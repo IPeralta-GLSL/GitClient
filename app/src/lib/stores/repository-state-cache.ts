@@ -3,22 +3,22 @@ import { Commit } from '../../models/commit'
 import { PullRequest } from '../../models/pull-request'
 import { Repository } from '../../models/repository'
 import {
-  WorkingDirectoryFileChange,
-  WorkingDirectoryStatus,
+    WorkingDirectoryFileChange,
+    WorkingDirectoryStatus,
 } from '../../models/status'
 import { TipState } from '../../models/tip'
 import {
-  HistoryTabMode,
-  IBranchesState,
-  IChangesState,
-  ICompareState,
-  IRepositoryState,
-  RepositorySectionTab,
-  ICommitSelection,
-  ChangesSelectionKind,
-  IMultiCommitOperationUndoState,
-  IMultiCommitOperationState,
-  IPullRequestState,
+    HistoryTabMode,
+    IBranchesState,
+    IChangesState,
+    ICompareState,
+    IRepositoryState,
+    RepositorySectionTab,
+    ICommitSelection,
+    ChangesSelectionKind,
+    IMultiCommitOperationUndoState,
+    IMultiCommitOperationState,
+    IPullRequestState,
 } from '../app-state'
 import { merge } from '../merge'
 import { DefaultCommitMessage } from '../../models/commit-message'
@@ -360,6 +360,7 @@ function getInitialRepositoryState(): IRepositoryState {
     localTags: null,
     tagsToPush: null,
     aheadBehind: null,
+    unpushedCommits: null,
     remote: null,
     isPushPullFetchInProgress: false,
     isCommitting: false,

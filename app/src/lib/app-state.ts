@@ -540,6 +540,12 @@ export interface IRepositoryState {
   /** The state of the current branch in relation to its upstream. */
   readonly aheadBehind: IAheadBehind | null
 
+  /**
+   * The number of unpushed commits on the current branch when it doesn't have an upstream.
+   * Null if it has an upstream or if the count is unknown.
+   */
+  readonly unpushedCommits: number | null
+
   /** The tags that will get pushed if the user performs a push operation. */
   readonly tagsToPush: ReadonlyArray<string> | null
 

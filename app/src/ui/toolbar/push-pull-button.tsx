@@ -34,6 +34,11 @@ interface IPushPullButtonProps {
    */
   readonly aheadBehind: IAheadBehind | null
 
+  /**
+   * Unpushed commits for the current branch when it doesn't have an upstream.
+   */
+  readonly unpushedCommits: number | null
+
   /** The name of the remote. */
   readonly remoteName: string | null
 
@@ -295,6 +300,7 @@ export class PushPullButton extends React.Component<
       progress,
       networkActionInProgress,
       aheadBehind,
+      unpushedCommits,
       numTagsToPush,
       remoteName,
       repository,
@@ -326,7 +332,10 @@ export class PushPullButton extends React.Component<
       return this.publishBranchButton(
         isGitHubRepository,
         this.push,
-        this.props.shouldNudge
+        this.props.shouldNudge,
+        unpushedCommits,
+        numTagsToPush,
+        lastFetched
       )
     }
 
@@ -436,7 +445,10 @@ export class PushPullButton extends React.Component<
   private publishBranchButton(
     isGitHub: boolean,
     onClick: () => void,
-    shouldNudge: boolean
+    shouldNudge: boolean,
+    unpushedCommits: number | null,
+    numTagsToPush: number,
+    lastFetched: Date | null
   ) {
     const description = isGitHub
       ? t('publishBranchToGitHub')
@@ -450,20 +462,22 @@ export class PushPullButton extends React.Component<
       }
     )
 
+    const totalCommits = (unpushedCommits || 0) + numTagsToPush
     return (
       <ToolbarButton
         {...this.defaultButtonProps()}
         title={t('publishBranch')}
-        description={description}
+        description={totalCommits > 0 ? renderLastFetched(lastFetched) : description}
         icon={octicons.arrowUp}
         onClick={onClick}
         className={className}
       >
-        <div className="ahead-behind">
-          <span>
+        {totalCommits > 0 && (
+          <div className="ahead-behind push-pull-button-indicator">
             <Octicon symbol={octicons.arrowUp} />
-          </span>
-        </div>
+            {totalCommits}
+          </div>
+        )}
       </ToolbarButton>
     )
   }
