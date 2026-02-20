@@ -6,7 +6,7 @@ export function envForAuthentication(): Record<string, string | undefined> {
     // supported since Git 2.3, this is used to ensure we never interactively prompt
     // for credentials - even as a fallback
     GIT_TERMINAL_PROMPT: '0',
-    GIT_TRACE: localStorage.getItem('git-trace') || '0',
+    GIT_TRACE: (typeof localStorage !== 'undefined' ? localStorage.getItem('git-trace') : null) || '0',
   }
 }
 
