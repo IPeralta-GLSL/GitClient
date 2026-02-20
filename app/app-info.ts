@@ -17,9 +17,8 @@ export function getReplacements() {
     __OAUTH_SECRET__: s(
       process.env.DESKTOP_OAUTH_CLIENT_SECRET || devClientSecret
     ),
-    // Provider-specific OAuth placeholders - set via env vars when available
-    __OAUTH_CLIENT_ID_GITLAB__: s(process.env.DESKTOP_OAUTH_CLIENT_ID_GITLAB || ''),
-    __OAUTH_SECRET_GITLAB__: s(process.env.DESKTOP_OAUTH_CLIENT_SECRET_GITLAB || ''),
+    __OAUTH_CLIENT_ID_GITLAB__: s(process.env.DESKTOP_OAUTH_CLIENT_ID_GITLAB || '23c1e0b5c0b206b1db0f0d5973842d3eff3068280dc7c94ce8e5a2977d410d38'),
+    __OAUTH_SECRET_GITLAB__: s(process.env.DESKTOP_OAUTH_CLIENT_SECRET_GITLAB || 'gloas-396983be84a9e14e0519541446f181529aa8dcf66942760d11f5051ccdd9e959'),
     __OAUTH_CLIENT_ID_BITBUCKET__: s(process.env.DESKTOP_OAUTH_CLIENT_ID_BITBUCKET || ''),
     __OAUTH_SECRET_BITBUCKET__: s(process.env.DESKTOP_OAUTH_CLIENT_SECRET_BITBUCKET || ''),
     __OAUTH_CLIENT_ID_CODEBERG__: s(process.env.DESKTOP_OAUTH_CLIENT_ID_CODEBERG || ''),

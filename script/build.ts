@@ -25,30 +25,30 @@ export interface ILicense {
 }
 
 import {
-  getBundleID,
-  getCompanyName,
-  getProductName,
+    getBundleID,
+    getCompanyName,
+    getProductName,
 } from '../app/package-info'
 
 import { isGitHubActions } from './build-platforms'
 import {
-  getChannel,
-  getDistArchitecture,
-  getDistRoot,
-  getExecutableName,
-  getIconFileName,
-  isPublishable,
+    getChannel,
+    getDistArchitecture,
+    getDistRoot,
+    getExecutableName,
+    getIconFileName,
+    isPublishable,
 } from './dist-info'
 
 import {
-  cpSync,
-  existsSync,
-  mkdirSync,
-  readdirSync,
-  readFileSync,
-  rmSync,
-  unlinkSync,
-  writeFileSync,
+    cpSync,
+    existsSync,
+    mkdirSync,
+    readdirSync,
+    readFileSync,
+    rmSync,
+    unlinkSync,
+    writeFileSync,
 } from 'fs'
 import { updateLicenseDump } from './licenses/update-license-dump'
 import { verifyInjectedSassVariables } from './validate-sass/validate-all'
@@ -207,7 +207,7 @@ function packageApp() {
           !isDevelopmentBuild
             ? 'x-github-desktop-auth'
             : 'x-github-desktop-dev-auth',
-          'x-github-client',
+          'x-gitclient',
           'github-mac',
         ],
       },

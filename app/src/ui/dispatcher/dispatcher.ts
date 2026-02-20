@@ -1601,7 +1601,7 @@ export class Dispatcher {
     resultCallback?: (result: SignInResult) => void
   ) {
     this.appStore._beginProviderSignIn(provider, resultCallback)
-    this.requestBrowserAuthentication()
+    this.appStore._showPopup({ type: PopupType.SignIn })
   }
 
   /**

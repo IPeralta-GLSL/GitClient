@@ -2473,7 +2473,7 @@ export function getOAuthAuthorizationURL(
     // GitLab: /oauth/authorize
     const scope = encodeURIComponent('read_user')
     const client = encodeURIComponent(ClientIDGitLab)
-    const redirect = encodeURIComponent('oauth://oauth')
+    const redirect = encodeURIComponent('x-gitclient://oauth')
     return `${urlBase}/oauth/authorize?client_id=${client}&redirect_uri=${redirect}&response_type=code&state=${state}&scope=${scope}`
   }
 
@@ -2481,7 +2481,7 @@ export function getOAuthAuthorizationURL(
     // Bitbucket: https://bitbucket.org/site/oauth2/authorize
     const scope = encodeURIComponent('account email')
     const client = encodeURIComponent(ClientIDBitbucket)
-    const redirect = encodeURIComponent('oauth://oauth')
+    const redirect = encodeURIComponent('x-gitclient://oauth')
     // Bitbucket uses a separate host for authorization
     return `https://bitbucket.org/site/oauth2/authorize?client_id=${client}&response_type=code&state=${state}&redirect_uri=${redirect}&scope=${scope}`
   }
@@ -2490,7 +2490,7 @@ export function getOAuthAuthorizationURL(
     // Codeberg (Gitea-style) - use /login/oauth/authorize
     const scope = encodeURIComponent('read_user')
     const client = encodeURIComponent(ClientIDCodeberg)
-    const redirect = encodeURIComponent('oauth://oauth')
+    const redirect = encodeURIComponent('x-gitclient://oauth')
     return `${urlBase}/login/oauth/authorize?client_id=${client}&redirect_uri=${redirect}&response_type=code&state=${state}&scope=${scope}`
   }
 
@@ -2519,7 +2519,7 @@ export async function requestOAuthToken(
       body.set('client_secret', ClientSecretGitLab)
       body.set('code', code)
       body.set('grant_type', 'authorization_code')
-      body.set('redirect_uri', 'oauth://oauth')
+      body.set('redirect_uri', 'x-gitclient://oauth')
 
       const response = await fetch(tokenUrl, {
         method: 'POST',
@@ -2537,7 +2537,7 @@ export async function requestOAuthToken(
       const body = new URLSearchParams()
       body.set('grant_type', 'authorization_code')
       body.set('code', code)
-      body.set('redirect_uri', 'oauth://oauth')
+      body.set('redirect_uri', 'x-gitclient://oauth')
 
       const creds = `${encodeURIComponent(ClientIDBitbucket)}:${encodeURIComponent(ClientSecretBitbucket)}`
       const response = await fetch(tokenUrl, {
@@ -2561,7 +2561,7 @@ export async function requestOAuthToken(
       body.set('client_id', ClientIDCodeberg)
       body.set('client_secret', ClientSecretCodeberg)
       body.set('code', code)
-      body.set('redirect_uri', 'oauth://oauth')
+      body.set('redirect_uri', 'x-gitclient://oauth')
 
       const response = await fetch(tokenUrl, {
         method: 'POST',

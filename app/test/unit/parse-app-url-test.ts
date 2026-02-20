@@ -1,9 +1,9 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert'
 import {
-  parseAppURL,
-  IOpenRepositoryFromURLAction,
-  IOAuthAction,
+    parseAppURL,
+    IOpenRepositoryFromURLAction,
+    IOAuthAction,
 } from '../../src/lib/parse-app-url'
 
 describe('parseAppURL', () => {
@@ -14,7 +14,7 @@ describe('parseAppURL', () => {
   describe('oauth', () => {
     it('returns right name', () => {
       const result = parseAppURL(
-        'x-github-client://oauth?code=18142422&state=e4cd2dea-1567-46aa-8eb2-c7f56e943187'
+        'x-gitclient://oauth?code=18142422&state=e4cd2dea-1567-46aa-8eb2-c7f56e943187'
       )
       assert.equal(result.name, 'oauth')
 
