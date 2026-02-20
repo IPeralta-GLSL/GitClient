@@ -4,9 +4,11 @@ import { OcticonSymbol } from '../octicons'
 import * as octicons from '../octicons/octicons.generated'
 import entries from 'lodash/entries'
 import groupBy from 'lodash/groupBy'
-import { caseInsensitiveEquals, compare } from '../../lib/compare'
+import { compare } from '../../lib/compare'
 
 /** The identifier for the "Your Repositories" grouping. */
+import { Account } from '../../models/account'
+
 export const YourRepositoriesIdentifier = 'your-repositories'
 
 export interface ICloneableRepositoryListItem extends IFilterListItem {
@@ -52,25 +54,30 @@ const toListItems = (repositories: ReadonlyArray<IAPIRepository>) =>
     }))
     .sort((x, y) => compare(x.name, y.name))
 
+function getServiceName(endpoint: string): string {
+  if (endpoint === 'https://api.github.com') {
+    return 'GitHub'
+  }
+  try {
+    const { hostname } = new window.URL(endpoint)
+    if (hostname.includes('gitlab')) return 'GitLab'
+    if (hostname.includes('bitbucket')) return 'Bitbucket'
+    if (hostname.includes('codeberg') || hostname.endsWith('.gitea')) return 'Codeberg'
+  } catch (e) {}
+  return 'Enterprise'
+}
+
 export function groupRepositories(
-  repositories: ReadonlyArray<IAPIRepository>,
+  repositories: ReadonlyArray<IAPIRepository & { _account?: Account }>,
   login: string
 ): ReadonlyArray<IFilterListGroup<ICloneableRepositoryListItem>> {
-  const groups = groupBy(repositories, x =>
-    caseInsensitiveEquals(x.owner.login, login)
-      ? YourRepositoriesIdentifier
-      : x.owner.login
-  )
+  const groups = groupBy(repositories, x => {
+    const serviceName = x._account ? getServiceName(x._account.endpoint) : 'GitHub'
+    return `${x.owner.login} (${serviceName})`
+  })
 
   return entries(groups)
     .map(([identifier, repos]) => ({ identifier, items: toListItems(repos) }))
-    .sort((x, y) => {
-      if (x.identifier === YourRepositoriesIdentifier) {
-        return -1
-      } else if (y.identifier === YourRepositoriesIdentifier) {
-        return 1
-      } else {
-        return compare(x.identifier, y.identifier)
-      }
-    })
+    .sort((x, y) => compare(x.identifier, y.identifier))
 }
+

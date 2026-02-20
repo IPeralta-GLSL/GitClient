@@ -9,7 +9,6 @@ import { Button } from '../lib/button'
 import { IAPIRepository } from '../../lib/api'
 import { CloneableRepositoryFilterList } from './cloneable-repository-filter-list'
 import { ClickSource } from '../lib/list'
-import { AccountPicker } from '../account-picker'
 
 interface ICloneGithubRepositoryProps {
   /** The account to clone from. */
@@ -87,23 +86,9 @@ interface ICloneGithubRepositoryProps {
 }
 
 export class CloneGithubRepository extends React.PureComponent<ICloneGithubRepositoryProps> {
-  private renderAccountPicker = () => {
-    return (
-      <AccountPicker
-        accounts={this.props.accounts}
-        selectedAccount={this.props.account}
-        onSelectedAccountChanged={this.props.onSelectedAccountChanged}
-        openButtonClassName="dialog-preferred-focus"
-      />
-    )
-  }
-
   public render() {
     return (
       <DialogContent className="clone-github-repository-content">
-        {this.props.accounts.length > 1 && (
-          <Row className="account-picker-row">{this.renderAccountPicker()}</Row>
-        )}
         <Row>
           <CloneableRepositoryFilterList
             account={this.props.account}
@@ -131,3 +116,4 @@ export class CloneGithubRepository extends React.PureComponent<ICloneGithubRepos
     )
   }
 }
+

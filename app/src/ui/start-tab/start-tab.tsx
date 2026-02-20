@@ -178,7 +178,7 @@ export class StartTab extends React.Component<
               <h2>{t('start')}</h2>
               <Button
                 className="start-action-btn"
-                onClick={this.props.onClone}
+                onClick={() => this.props.onClone()}
               >
                 <Octicon symbol={octicons.repoClone} />
                 <div className="action-text">

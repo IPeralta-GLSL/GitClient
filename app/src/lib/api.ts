@@ -2,25 +2,25 @@ import * as URL from 'url'
 import { Account } from '../models/account'
 
 import {
-    request,
-    parsedResponse,
-    HTTPMethod,
-    APIError,
-    urlWithQueryString,
-    getUserAgent,
+  request,
+  parsedResponse,
+  HTTPMethod,
+  APIError,
+  urlWithQueryString,
+  getUserAgent,
 } from './http'
 import { uuid } from './uuid'
 import { GitProtocol } from './remote-parsing'
 import {
-    getEndpointVersion,
-    isDotCom,
-    isGHE,
-    isGHES,
-    updateEndpointVersion,
+  getEndpointVersion,
+  isDotCom,
+  isGHE,
+  isGHES,
+  updateEndpointVersion,
 } from './endpoint-capabilities'
 import {
-    clearCertificateErrorSuppressionFor,
-    suppressCertificateErrorFor,
+  clearCertificateErrorSuppressionFor,
+  suppressCertificateErrorFor,
 } from './suppress-certificate-error'
 import { HttpStatusCode } from './http-status-code'
 import { CopilotError } from './copilot-error'
@@ -1071,6 +1071,60 @@ export class API {
     } catch (error) {
       log.warn(
         `streamUserRepositories: failed with endpoint ${this.endpoint}`,
+        error
+      )
+    }
+  }
+
+  /**
+   * Fetch all repos a user has access to on GitLab in a streaming fashion.
+   * The callback will be called for each new page fetched from the API.
+   */
+  public async streamGitLabRepositories(
+    callback: (repos: ReadonlyArray<IAPIRepository>) => void,
+    options?: IFetchAllOptions<IAPIRepository>
+  ) {
+    try {
+      // GitLab API requires the v4 prefix. If the endpoint does not already include it, we need to append it.
+      let path = 'api/v4/projects?membership=true&min_access_level=20'
+      if (this.endpoint.endsWith('/api/v4') || this.endpoint.endsWith('/api/v4/')) {
+        path = 'projects?membership=true&min_access_level=20'
+      }
+
+      await this.fetchAll<any>(path, {
+        ...options,
+        onPage: page => {
+          const mapped = page.map(
+            (p: any) =>
+              ({
+                clone_url: p.http_url_to_repo,
+                ssh_url: p.ssh_url_to_repo,
+                html_url: p.web_url,
+                name: p.name,
+                owner: {
+                  id: p.namespace && p.namespace.id ? p.namespace.id : 0,
+                  login: p.namespace && p.namespace.path ? p.namespace.path : '',
+                  url: p.namespace && p.namespace.web_url ? p.namespace.web_url : '',
+                  html_url: p.namespace && p.namespace.web_url ? p.namespace.web_url : '',
+                  avatar_url: p.namespace && p.namespace.avatar_url ? p.namespace.avatar_url : '',
+                  type: p.namespace && p.namespace.kind === 'group' ? 'Organization' : 'User',
+                  name: p.namespace && p.namespace.name ? p.namespace.name : '',
+                } as any,
+                private: p.visibility === 'private',
+                fork: !!p.forked_from_project,
+                default_branch: p.default_branch,
+                pushed_at: p.last_activity_at,
+                has_issues: p.issues_enabled !== false,
+                archived: p.archived,
+              } as IAPIRepository)
+          )
+          callback(mapped.filter(x => x.owner !== null))
+          options?.onPage?.(mapped)
+        },
+      })
+    } catch (error) {
+      log.warn(
+        `streamGitLabRepositories: failed with endpoint ${this.endpoint}`,
         error
       )
     }
@@ -2471,7 +2525,7 @@ export function getOAuthAuthorizationURL(
 
   if (provider === 'gitlab') {
     // GitLab: /oauth/authorize
-    const scope = encodeURIComponent('read_user')
+    const scope = encodeURIComponent('api read_api read_user read_repository write_repository')
     const client = encodeURIComponent(ClientIDGitLab)
     const redirect = encodeURIComponent('x-gitclient://oauth')
     return `${urlBase}/oauth/authorize?client_id=${client}&redirect_uri=${redirect}&response_type=code&state=${state}&scope=${scope}`

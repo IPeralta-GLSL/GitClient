@@ -361,19 +361,29 @@ export class CloneRepository extends React.Component<
         const tabAccounts = this.getAccountsForTab(tab, this.props.accounts)
         const selectedAccount = this.getAccountForTab(tab)
 
-        if (!selectedAccount) {
+        if (!selectedAccount || tabAccounts.length === 0) {
           return <DialogContent>{this.renderSignIn(tab)}</DialogContent>
         } else {
-          const accountState = this.props.apiRepositories.get(selectedAccount)
-          const repositories =
-            accountState === undefined ? null : accountState.repositories
-          const loading =
-            accountState === undefined ? false : accountState.loading
+          const loading = tabAccounts.some(
+            a => this.props.apiRepositories.get(a)?.loading
+          )
+
+          let repositories: any[] | null = null
+          for (const a of tabAccounts) {
+            const accountState = this.props.apiRepositories.get(a)
+            if (accountState?.repositories) {
+              if (repositories === null) {
+                repositories = []
+              }
+              const augmented = accountState.repositories.map((r: any) => ({ ...r, _account: a }))
+              repositories.push(...augmented)
+            }
+          }
 
           return (
             <CloneGithubRepository
               path={tabState.path ?? ''}
-              account={selectedAccount}
+              account={selectedAccount!}
               accounts={tabAccounts}
               selectedItem={tabState.selectedItem}
               onSelectionChanged={this.onSelectionChanged}

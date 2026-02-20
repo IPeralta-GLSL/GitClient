@@ -3,9 +3,8 @@ import { Account } from '../../models/account'
 import { IFilterListGroup } from '../lib/filter-list'
 import { IAPIRepository } from '../../lib/api'
 import {
-  ICloneableRepositoryListItem,
-  groupRepositories,
-  YourRepositoriesIdentifier,
+    ICloneableRepositoryListItem,
+    groupRepositories,
 } from './group-repositories'
 import memoizeOne from 'memoize-one'
 import { Button } from '../lib/button'
@@ -160,10 +159,7 @@ export class CloneableRepositoryFilterList extends React.PureComponent<ICloneabl
   private getGroupAriaLabelGetter =
     (groups: ReadonlyArray<IFilterListGroup<ICloneableRepositoryListItem>>) =>
     (group: number) => {
-      const groupIdentifier = groups[group].identifier
-      return groupIdentifier === YourRepositoriesIdentifier
-        ? this.getYourRepositoriesLabel()
-        : groupIdentifier
+      return groups[group].identifier
     }
 
   public render() {
@@ -221,18 +217,10 @@ export class CloneableRepositoryFilterList extends React.PureComponent<ICloneabl
     }
   }
 
-  private getYourRepositoriesLabel = () => {
-    return __DARWIN__ ? 'Your Repositories' : 'Your repositories'
-  }
-
   private renderGroupHeader = (identifier: string) => {
-    let header = identifier
-    if (identifier === YourRepositoriesIdentifier) {
-      header = this.getYourRepositoriesLabel()
-    }
     return (
       <div className="clone-repository-list-content clone-repository-list-group-header">
-        {header}
+        {identifier}
       </div>
     )
   }
