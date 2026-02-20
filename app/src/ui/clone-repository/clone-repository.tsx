@@ -271,10 +271,15 @@ export class CloneRepository extends React.Component<
         loading={this.state.loading}
       >
         <TabBar
-          onTabClicked={this.onTabClicked}
-          selectedIndex={this.props.selectedTab}
+          onTabClicked={(index) =>
+            this.props.onTabSelected(
+              index === 0 ? CloneRepositoryTab.Enterprise : CloneRepositoryTab.Generic
+            )
+          }
+          selectedIndex={
+            this.props.selectedTab === CloneRepositoryTab.Generic ? 1 : 0
+          }
         >
-          <span id="dotcom-tab">{t('githubCom')}</span>
           <span id="enterprise-tab">{t('githubEnterprise')}</span>
           <span id="url-tab">{t('url')}</span>
         </TabBar>
@@ -291,11 +296,9 @@ export class CloneRepository extends React.Component<
   }
 
   private getSelectedTabId = () => {
-    return this.props.selectedTab === CloneRepositoryTab.DotCom
-      ? 'dotcom-tab'
-      : this.props.selectedTab === CloneRepositoryTab.Enterprise
-      ? 'enterprise-tab'
-      : 'url-tab'
+    return this.props.selectedTab === CloneRepositoryTab.Generic
+      ? 'url-tab'
+      : 'enterprise-tab'
   }
 
   private checkIfCloningDisabled = () => {
@@ -329,10 +332,6 @@ export class CloneRepository extends React.Component<
         <OkCancelButtonGroup okButtonText={t('clone')} okButtonDisabled={disabled} />
       </DialogFooter>
     )
-  }
-
-  private onTabClicked = (tab: CloneRepositoryTab) => {
-    this.props.onTabSelected(tab)
   }
 
   private onPathChanged = (path: string) => {

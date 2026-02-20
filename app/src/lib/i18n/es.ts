@@ -110,7 +110,7 @@ export const es: ITranslations = {
   clone: 'Clonar',
   url: 'URL',
   githubCom: 'GitHub.com',
-  githubEnterprise: 'GitHub Enterprise',
+  githubEnterprise: 'Repositorios',
   signIn: 'Iniciar sesión',
   signOut: 'Cerrar sesión',
   connect: 'Conectar',
